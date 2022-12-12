@@ -2,7 +2,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@*": ["src/*"],
+      "@models*": ["src/components/models/*"]
     },
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],

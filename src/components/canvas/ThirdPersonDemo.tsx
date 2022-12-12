@@ -33,8 +33,6 @@ export default function ThirdPersonDemo() {
         <Debug />
         <Floor />
         <InstancedTreesWithPhysics />
-        {/* <Trees /> */}
-        {/* <Plane /> */}
       </Physics>
     </>
   )

@@ -233,11 +233,7 @@ export function ImprovedPlayerController() {
 
   return (
     <>
-      <RigidBody
-        colliders='trimesh'
-        ref={rigidBodyRef}
-        type='kinematicPosition'
-        enabledRotations={[false, false, false]}>
+      <RigidBody colliders='hull' ref={rigidBodyRef} type='kinematicPosition' enabledRotations={[false, false, false]}>
         <Trex withAnimations={true} />
       </RigidBody>
       <Debug />

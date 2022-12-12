@@ -1,10 +1,10 @@
-import { FirstPersonController } from '@/components/canvas/FirstPersonController'
+import { FirstPersonController } from '@components/canvas/FirstPersonController'
 import {
   TreeWithBallPhysics,
   TreeWithCuboidPhysics,
   TreeWithHullPhysics,
   TreeWithPhysics,
-} from '@/components/canvas/TreeStuff'
+} from '@components/canvas/TreeStuff'
 import { Box, Sky } from '@react-three/drei'
 import { Debug, Physics, RigidBody } from '@react-three/rapier'
 

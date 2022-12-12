@@ -8,9 +8,9 @@ import {
 } from '@react-three/rapier'
 import { useEffect, useRef } from 'react'
 import { Vector3 } from 'three'
-import { BirchTree_1 } from '@components/models/nature_pack'
-import { useTree1 } from '@components/models/nature_pack/CommonTree_1'
-import { default as Tree1 } from '@components/models/simple_nature_pack/Tree1'
+import { BirchTree_1 } from '@models/nature_pack'
+import { useTree1 } from '@models/nature_pack/CommonTree_1'
+import { default as Tree1 } from '@models/simple_nature_pack/Tree1'
 
 export const InstancedTreesWithPhysics = () => {
   const api = useRef<InstancedRigidBodyApi>(null)

@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic'
 
-const FreeMovement = dynamic(() => import('@/components/canvas/FreeMovement'), { ssr: false })
+const FreeMovement = dynamic(() => import('@components/canvas/FreeMovement'), { ssr: false })
 
 export default function Page() {
   return <></>
