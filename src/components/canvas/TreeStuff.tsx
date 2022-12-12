@@ -7,7 +7,7 @@ import {
   Vector3Array,
 } from '@react-three/rapier'
 import { useEffect, useRef } from 'react'
-import { Euler, Vector3 } from 'three'
+import { Euler, InstancedMesh, Object3D, Vector3 } from 'three'
 import { BirchTree_1 } from '@models/nature_pack'
 import { useTree1 } from '@models/nature_pack/CommonTree_1'
 import { default as Tree1 } from '@models/simple_nature_pack/Tree1'
@@ -104,30 +104,30 @@ export function Trees() {
 }
 
 export function KelpForest({ amount = 1000 }) {
-  const kelps = new Array(amount).fill(0).map(() => {
-    const scale = randFloat(0.2, 0.3)
-
-    return {
-      pos: new Vector3(random(-200, 200), 0, random(-200, 200)),
-      rot: new Euler(0, random(0.2, 0.5), 0),
-      scale: new Vector3(scale, scale, scale),
-    }
-  })
-
   const { nodes, materials } = useKelp()
 
   const kelpGeometry = nodes.Object_7.geometry
   const kelpMaterial = materials.lambert2
 
-  return (
-    <>
-      {kelps.map(({ pos, scale, rot }, index) => {
-        return (
-          <instancedMesh key={index} position={pos} scale={scale} rotation={rot}>
-            <mesh material={kelpMaterial} geometry={kelpGeometry} />
-          </instancedMesh>
-        )
-      })}
-    </>
-  )
+  const ref = useRef<InstancedMesh>()
+
+  useEffect(() => {
+    const temp = new Object3D()
+
+    for (let i = 0; i < amount; i++) {
+      const scale = randFloat(0.2, 0.3)
+
+      temp.position.set(randFloat(-200, 200), 0, randFloat(-200, 200))
+      temp.rotation.set(0, random(0.2, 0.5), 0)
+      temp.scale.set(scale, scale, scale)
+
+      temp.updateMatrix()
+
+      ref.current.setMatrixAt(i, temp.matrix)
+    }
+
+    ref.current.instanceMatrix.needsUpdate = true
+  }, [amount])
+
+  return <instancedMesh ref={ref} args={[kelpGeometry, kelpMaterial, amount]} />
 }
