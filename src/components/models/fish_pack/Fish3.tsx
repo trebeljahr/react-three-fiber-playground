@@ -6,7 +6,6 @@ import * as THREE from 'three'
 import React, { useRef } from 'react'
 import { useGLTF } from '@react-three/drei'
 import { useAnimationsWithCleanup } from '@hooks/useAnimationsWithCleanup'
-import { GenericAnimationController } from '@components/canvas/GenericAnimationController'
 import { GLTF } from 'three-stdlib'
 
 type GLTFResult = GLTF & {
@@ -35,7 +34,6 @@ export default function Model(props: JSX.IntrinsicElements['group']) {
   const { actions } = useAnimationsWithCleanup(animations, group)
   return (
     <group ref={group} {...props} dispose={null}>
-      <GenericAnimationController actions={actions} />
       <group name='Root_Scene'>
         <group name='RootNode'>
           <group name='Armature' rotation={[-Math.PI / 2, 0, 0]} scale={100}>
