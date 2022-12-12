@@ -13,7 +13,7 @@ export default function Scene({ children, ...props }) {
         { name: 'descend', keys: ['c', 'C', 'Shift'] },
         { name: 'attack', keys: ['F', 'f'] },
       ]}>
-      <Canvas {...props}>
+      <Canvas {...props} gl={{ logarithmicDepthBuffer: true }}>
         <ambientLight />
         <pointLight position={[10, 10, 10]} />
         {children}

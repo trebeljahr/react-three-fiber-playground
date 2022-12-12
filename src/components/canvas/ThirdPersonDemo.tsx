@@ -1,3 +1,4 @@
+import { useBeachMaterial } from '@models/useBeachMaterial'
 import { Box, Sky } from '@react-three/drei'
 import { Debug, Physics, RigidBody } from '@react-three/rapier'
 import { DoubleSide } from 'three'
@@ -15,10 +16,14 @@ export const Floor = () => {
 }
 
 export function Plane() {
+  const {
+    materials: { aerial_beach_01: beachMaterial },
+  } = useBeachMaterial()
+
   return (
-    <mesh position={[0, 0, 0]} rotation={[Math.PI / 2, 0, 0]} scale={[1000, 1000, 1000]}>
+    <mesh position={[0, 0, 0]} material={beachMaterial} rotation={[Math.PI / 2, 0, 0]} scale={[1000, 1000, 1000]}>
       <planeGeometry />
-      <meshBasicMaterial color='#7EC850' side={DoubleSide} />
+      {/* <meshBasicMaterial color='#C2B280' side={DoubleSide} /> */}
     </mesh>
   )
 }

@@ -7,12 +7,12 @@ import {
   Vector3Array,
 } from '@react-three/rapier'
 import { useEffect, useRef } from 'react'
-import { Vector3 } from 'three'
+import { Euler, Vector3 } from 'three'
 import { BirchTree_1 } from '@models/nature_pack'
 import { useTree1 } from '@models/nature_pack/CommonTree_1'
 import { default as Tree1 } from '@models/simple_nature_pack/Tree1'
-import { Kelp3 } from '@components/models/Kelp3'
-import { Kelp4, useKelp } from '@components/models/Kelp4'
+import { Kelp3 } from '@models/Kelp3'
+import { Kelp4, useKelp } from '@models/Kelp4'
 
 export const InstancedTreesWithPhysics = () => {
   const api = useRef<InstancedRigidBodyApi>(null)
@@ -102,10 +102,16 @@ export function Trees() {
   )
 }
 
-export function KelpForest() {
-  const positions = new Array(1000).fill(0).map(() => new Vector3(random(-200, 200), 0, random(-200, 200)))
-  // const scale = new Array(1000).fill(0).map(() => new Vector3(random(-200, 200), 0, random(-200, 200)))
-  // const rotations = new Array(1000).fill(0).map(() => new Vector3(random(-200, 200), 0, random(-200, 200)))
+export function KelpForest({ amount = 100 }) {
+  const kelps = new Array(amount).fill(0).map(() => {
+    const scale = random(0.2, 0.5)
+    return {
+      pos: new Vector3(random(-200, 200), 0, random(-200, 200)),
+      rot: new Euler(0, random(0.2, 0.5), 0),
+      scale: new Vector3(scale, scale, scale),
+    }
+  })
+
   const { nodes, materials } = useKelp()
 
   const kelpGeometry = nodes.Object_7.geometry
@@ -113,9 +119,9 @@ export function KelpForest() {
 
   return (
     <>
-      {positions.map((pos, index) => {
+      {kelps.map(({ pos, scale, rot }, index) => {
         return (
-          <instancedMesh key={index} position={pos} scale={[0.2, 0.2, 0.2]}>
+          <instancedMesh key={index} position={pos} scale={scale} rotation={rot}>
             <mesh material={kelpMaterial} geometry={kelpGeometry} />
           </instancedMesh>
         )
