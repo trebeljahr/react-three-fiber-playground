@@ -11,6 +11,8 @@ import { Vector3 } from 'three'
 import { BirchTree_1 } from '@models/nature_pack'
 import { useTree1 } from '@models/nature_pack/CommonTree_1'
 import { default as Tree1 } from '@models/simple_nature_pack/Tree1'
+import { Kelp3 } from '@components/models/Kelp3'
+import { Kelp4, useKelp } from '@components/models/Kelp4'
 
 export const InstancedTreesWithPhysics = () => {
   const api = useRef<InstancedRigidBodyApi>(null)
@@ -95,6 +97,28 @@ export function Trees() {
     <>
       {positions.map((pos, index) => {
         return <BirchTree_1 key={index} position={pos} scale={new Vector3(5, 5, 5)} />
+      })}
+    </>
+  )
+}
+
+export function KelpForest() {
+  const positions = new Array(1000).fill(0).map(() => new Vector3(random(-200, 200), 0, random(-200, 200)))
+  // const scale = new Array(1000).fill(0).map(() => new Vector3(random(-200, 200), 0, random(-200, 200)))
+  // const rotations = new Array(1000).fill(0).map(() => new Vector3(random(-200, 200), 0, random(-200, 200)))
+  const { nodes, materials } = useKelp()
+
+  const kelpGeometry = nodes.Object_7.geometry
+  const kelpMaterial = materials.lambert2
+
+  return (
+    <>
+      {positions.map((pos, index) => {
+        return (
+          <instancedMesh key={index} position={pos} scale={[0.2, 0.2, 0.2]}>
+            <mesh material={kelpMaterial} geometry={kelpGeometry} />
+          </instancedMesh>
+        )
       })}
     </>
   )

@@ -3,7 +3,7 @@ import { FlyingPlayer } from './FlyingPlayer'
 import { FollowingTrex } from './Trex'
 import { PointerLockControls, Sky } from '@react-three/drei'
 import { Plane } from './ThirdPersonDemo'
-import { Trees } from './TreeStuff'
+import { KelpForest, Trees } from './TreeStuff'
 import { BufferGeometry, Group, Matrix4, Mesh, MeshBasicMaterial, SphereGeometry } from 'three'
 import { useFrame } from '@react-three/fiber'
 import { forwardRef, MutableRefObject, useState } from 'react'
@@ -83,8 +83,6 @@ function Effects() {
 export default function FreeMovement() {
   return (
     <>
-      {/* <Sky azimuth={1} inclination={0.6} distance={1000} /> */}
-
       <Physics>
         <FlyingPlayer />
       </Physics>
@@ -92,8 +90,7 @@ export default function FreeMovement() {
       <fogExp2 attach='fog' color='#0086ad' density={0.03} />
       <color attach='background' args={['#0086ad']} />
 
-      <FollowingTrex />
-      <Trees />
+      <KelpForest />
       <Plane />
 
       <Effects />
