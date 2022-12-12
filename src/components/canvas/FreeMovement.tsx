@@ -1,6 +1,6 @@
 import { Physics } from '@react-three/rapier'
 import { FlyingPlayer } from './FlyingPlayer'
-import { PointerLockControls } from '@react-three/drei'
+import { Box, PointerLockControls } from '@react-three/drei'
 import { Plane } from './ThirdPersonDemo'
 import { KelpForest, Trees } from './TreeStuff'
 import { Whale } from '@models/fish_pack'
@@ -20,11 +20,12 @@ export default function FreeMovement() {
         <FlyingPlayer />
       </Physics>
       <PointerLockControls />
-      <fogExp2 attach='fog' color='#0086ad' density={0.03} />
+      <fogExp2 attach='fog' color='#0086ad' density={0.02} />
       <color attach='background' args={['#0086ad']} />
 
+      {/* <Box args={[1, 1, 1]} /> */}
       {/* <InstancedWhale scale={[100, 100, 100]} position={[0, 0, 0]} /> */}
-      <Whale scale={[10, 10, 10]} position={[0, 50, 0]} />
+      <Whale scale={[5, 5, 5]} position={[0, 60, 0]} />
 
       <KelpForest />
       <Plane />

@@ -13,6 +13,7 @@ import { useTree1 } from '@models/nature_pack/CommonTree_1'
 import { default as Tree1 } from '@models/simple_nature_pack/Tree1'
 import { Kelp3 } from '@models/Kelp3'
 import { Kelp4, useKelp } from '@models/Kelp4'
+import { randFloat } from 'three/src/math/MathUtils'
 
 export const InstancedTreesWithPhysics = () => {
   const api = useRef<InstancedRigidBodyApi>(null)
@@ -102,9 +103,10 @@ export function Trees() {
   )
 }
 
-export function KelpForest({ amount = 100 }) {
+export function KelpForest({ amount = 1000 }) {
   const kelps = new Array(amount).fill(0).map(() => {
-    const scale = random(0.2, 0.5)
+    const scale = randFloat(0.2, 0.3)
+
     return {
       pos: new Vector3(random(-200, 200), 0, random(-200, 200)),
       rot: new Euler(0, random(0.2, 0.5), 0),
