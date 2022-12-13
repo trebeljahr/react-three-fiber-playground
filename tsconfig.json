@@ -3,7 +3,8 @@
     "baseUrl": ".",
     "paths": {
       "@*": ["src/*"],
-      "@models*": ["src/models/*"]
+      "@models*": ["src/models/*"],
+      "@shaders*": ["src/shaders/*"]
     },
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],

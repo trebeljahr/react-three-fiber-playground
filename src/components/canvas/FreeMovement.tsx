@@ -1,10 +1,9 @@
+import { Whale } from '@models/fish_pack'
+import { PointerLockControls } from '@react-three/drei'
 import { Physics } from '@react-three/rapier'
 import { FlyingPlayer } from './FlyingPlayer'
-import { Box, PointerLockControls } from '@react-three/drei'
+import { KelpForest } from './Kelp'
 import { Plane } from './ThirdPersonDemo'
-import { KelpForest, Trees } from './TreeStuff'
-import { Whale } from '@models/fish_pack'
-import { Effects } from './Effects'
 
 // color palette underwater
 // #daf8e3
