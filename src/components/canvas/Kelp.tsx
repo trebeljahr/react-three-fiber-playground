@@ -2,13 +2,25 @@ import { useKelp } from '@models/Kelp4'
 import { extend, Node, useFrame } from '@react-three/fiber'
 import kelpFrag from '@shaders/kelp.frag'
 import kelpVert from '@shaders/kelp.vert'
+
+import kelpInstanceFrag from '@shaders/kelpInstance.frag'
+import kelpInstanceVert from '@shaders/kelpInstance.vert'
+
 import { LayerMaterial } from 'lamina'
 import { Abstract } from 'lamina/vanilla'
 
 import { MeshWobbleMaterial } from '@react-three/drei'
 import { LayerProps } from 'lamina/types'
 import { forwardRef, useEffect, useMemo, useRef } from 'react'
-import { BufferGeometry, InstancedMesh, MeshStandardMaterial, Object3D, Shader, ShaderMaterial } from 'three'
+import {
+  BufferGeometry,
+  InstancedMesh,
+  MeshStandardMaterial,
+  Object3D,
+  Shader,
+  ShaderMaterial,
+  UniformsLib,
+} from 'three'
 import { randFloat } from 'three/src/math/MathUtils'
 
 interface DisplacementLayerProps extends LayerProps {
@@ -158,6 +170,31 @@ export function SingleKelp() {
     </mesh>
   )
 }
+
+export function KelpShaderMaterialForInstances() {
+  const shaderRef = useRef<ShaderMaterial>()
+
+  console.log(kelpInstanceFrag)
+  console.log(kelpInstanceVert)
+
+  useFrame((_, delta) => {
+    if (shaderRef.current) {
+      shaderRef.current.uniforms.uTime.value += delta
+      //   console.log(shaderRef.current.uniforms.uTime.value)
+    }
+  })
+
+  return (
+    <shaderMaterial
+      ref={shaderRef}
+      fog={true}
+      uniforms={{ ...UniformsLib['fog'], uTime: { value: 0 } }}
+      vertexShader={kelpInstanceVert}
+      fragmentShader={kelpInstanceFrag}
+    />
+  )
+}
+
 export function KelpForest({ amount = 100, size = 100 }) {
   const { nodes } = useKelp()
 
@@ -189,7 +226,8 @@ export function KelpForest({ amount = 100, size = 100 }) {
       {/* <shaderMaterial vertexShader={kelpVert} fragmentShader={kelpFrag} uniforms={uniforms} /> */}
       {/* <KelpShaderMaterial /> */}
       {/* <KelpSimpleShaderMaterial /> */}
-      <ExtendedKelpMaterial />
+      {/* <ExtendedKelpMaterial /> */}
+      <KelpShaderMaterialForInstances />
       {/* <MeshWobbleMaterial color='#f25042' speed={1} factor={0.6} /> */}
     </instancedMesh>
   )
