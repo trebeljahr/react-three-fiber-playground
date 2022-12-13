@@ -1,21 +1,10 @@
-#include <fog_pars_vertex>
-
-// attribute vec3 normal;
-// attribute vec3 position;
-// attribute mat4 instanceMatrix;
-
-// uniform mat4 viewMatrix;
-// uniform mat4 projectionMatrix;
-
+varying float v_fogDepth;
 varying vec3 vNormal;
 
 void main() {
   vNormal = (viewMatrix * instanceMatrix * vec4(normal, 0.0)).xyz;
 
-#include <begin_vertex>
-#include <fog_vertex>
-#include <project_vertex>
-
-  gl_Position =
-      projectionMatrix * viewMatrix * instanceMatrix * vec4(position, 1.0);
+  vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+  gl_Position = projectionMatrix * instanceMatrix * mvPosition;
+  v_fogDepth = length(mvPosition);
 }

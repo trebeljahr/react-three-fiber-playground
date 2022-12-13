@@ -184,11 +184,15 @@ export function KelpShaderMaterialForInstances() {
     }
   })
 
+  const uniforms = { ...UniformsLib['fog'], uTime: { value: 0 } }
+
+  console.log(uniforms)
+
   return (
     <shaderMaterial
       ref={shaderRef}
       fog={true}
-      uniforms={{ ...UniformsLib['fog'], uTime: { value: 0 } }}
+      uniforms={uniforms}
       vertexShader={kelpInstanceVert}
       fragmentShader={kelpInstanceFrag}
     />
