@@ -5,6 +5,7 @@ import kelpVert from '@shaders/kelp.vert'
 import { LayerMaterial } from 'lamina'
 import { Abstract } from 'lamina/vanilla'
 
+import { MeshWobbleMaterial } from '@react-three/drei'
 import { LayerProps } from 'lamina/types'
 import { forwardRef, useEffect, useMemo, useRef } from 'react'
 import { BufferGeometry, InstancedMesh, MeshStandardMaterial, Object3D, Shader, ShaderMaterial } from 'three'
@@ -86,6 +87,7 @@ export function ExtendedKelpMaterial() {
   useFrame((_, delta) => {
     if (shaderRef.current) {
       shaderRef.current.uniforms.uTime.value += delta
+      //   console.log(shaderRef.current.uniforms.uTime.value)
     }
   })
 
@@ -94,7 +96,14 @@ export function ExtendedKelpMaterial() {
     if (!material) return
 
     material.onBeforeCompile = (shader) => {
+      console.log('Running on beforeCompile')
+
+      console.log(shader)
+      console.log(shader.uniforms)
+
       shader.uniforms.uTime = { value: 0 }
+
+      console.log(shader.uniforms.uTime)
 
       // shader hacking!
       shader.vertexShader = shader.vertexShader.replace(
@@ -115,7 +124,7 @@ export function ExtendedKelpMaterial() {
         `
       #include <beginnormal_vertex>
 
-      float angle = (position.y + uTime) * 0.9;
+      float angle = (position.y + uTime) * 10.0;
       mat2 rotateMatrix = get2dRotateMatrix(angle);
 
       objectNormal.xz = rotateMatrix * objectNormal.xz;
@@ -130,13 +139,26 @@ export function ExtendedKelpMaterial() {
       `,
       )
       shaderRef.current = shader
+
+      //   console.log(shaderRef.current.vertexShader, shaderRef.current.fragmentShader)
     }
   }, [materialRef, shaderRef])
 
   return <meshStandardMaterial ref={materialRef} color='green' />
 }
 
-export function KelpForest({ amount = 1 }) {
+export function SingleKelp() {
+  const { nodes } = useKelp()
+
+  const kelpGeometry = nodes.Object_7.geometry
+
+  return (
+    <mesh geometry={kelpGeometry}>
+      <MeshWobbleMaterial attach='material' color='#f25042' speed={1} factor={0.6} />
+    </mesh>
+  )
+}
+export function KelpForest({ amount = 100, size = 100 }) {
   const { nodes } = useKelp()
 
   const kelpGeometry = nodes.Object_7.geometry
@@ -149,7 +171,8 @@ export function KelpForest({ amount = 1 }) {
     for (let i = 0; i < amount; i++) {
       const scale = randFloat(0.2, 0.3)
 
-      temp.position.set(0, 0, 0)
+      //   temp.position.set(0, 0, 0)
+      temp.position.set(randFloat(-size, size), 0, randFloat(-size, size))
       temp.rotation.set(0, randFloat(0.2, 0.5), 0)
       temp.scale.set(scale, scale, scale)
 
@@ -159,7 +182,7 @@ export function KelpForest({ amount = 1 }) {
     }
 
     ref.current.instanceMatrix.needsUpdate = true
-  }, [amount])
+  }, [amount, size])
 
   return (
     <instancedMesh ref={ref} args={[kelpGeometry, null, amount]}>
@@ -167,6 +190,7 @@ export function KelpForest({ amount = 1 }) {
       {/* <KelpShaderMaterial /> */}
       {/* <KelpSimpleShaderMaterial /> */}
       <ExtendedKelpMaterial />
+      {/* <MeshWobbleMaterial color='#f25042' speed={1} factor={0.6} /> */}
     </instancedMesh>
   )
 }

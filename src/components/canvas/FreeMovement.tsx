@@ -21,14 +21,13 @@ export default function FreeMovement() {
       <PointerLockControls />
       <fogExp2 attach='fog' color='#0086ad' density={0.02} />
       <color attach='background' args={['#0086ad']} />
-
       {/* <Box args={[1, 1, 1]} /> */}
       {/* <InstancedWhale scale={[100, 100, 100]} position={[0, 0, 0]} /> */}
       <Whale scale={[5, 5, 5]} position={[0, 60, 0]} />
-
       <KelpForest />
-      <Plane />
 
+      {/* <SingleKelp /> */}
+      <Plane />
       {/* <Effects /> */}
     </>
   )
