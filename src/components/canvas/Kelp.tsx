@@ -6,8 +6,8 @@ import { LayerMaterial } from 'lamina'
 import { Abstract } from 'lamina/vanilla'
 
 import { LayerProps } from 'lamina/types'
-import { forwardRef, useEffect, useRef } from 'react'
-import { BufferGeometry, InstancedMesh, Object3D, ShaderMaterial } from 'three'
+import { forwardRef, useEffect, useMemo, useRef } from 'react'
+import { BufferGeometry, InstancedMesh, MeshStandardMaterial, Object3D, Shader, ShaderMaterial } from 'three'
 import { randFloat } from 'three/src/math/MathUtils'
 
 interface DisplacementLayerProps extends LayerProps {
@@ -51,7 +51,7 @@ function KelpShaderMaterial() {
 
   useFrame((state) => {
     const { clock } = state
-    ref.current.uniforms.u_time = clock.getElapsedTime()
+    // ref.current.uniforms.u_time = clock.getElapsedTime()
   })
 
   return (
@@ -60,6 +60,82 @@ function KelpShaderMaterial() {
     </LayerMaterial>
   )
 }
+
+function KelpSimpleShaderMaterial() {
+  const ref = useRef<ShaderMaterial>()
+  const uniforms = useMemo(
+    () => ({
+      u_time: {
+        value: 0.0,
+      },
+    }),
+    [],
+  )
+
+  useFrame((state) => {
+    const { clock } = state
+    ref.current.uniforms.u_time.value = clock.getElapsedTime()
+  })
+
+  return <shaderMaterial ref={ref} vertexShader={kelpVert} fragmentShader={kelpFrag} uniforms={uniforms} />
+}
+
+export function ExtendedKelpMaterial() {
+  const materialRef = useRef<MeshStandardMaterial>()
+  const shaderRef = useRef<Shader>()
+  useFrame((_, delta) => {
+    if (shaderRef.current) {
+      shaderRef.current.uniforms.uTime.value += delta
+    }
+  })
+
+  useEffect(() => {
+    const material = materialRef.current
+    if (!material) return
+
+    material.onBeforeCompile = (shader) => {
+      shader.uniforms.uTime = { value: 0 }
+
+      // shader hacking!
+      shader.vertexShader = shader.vertexShader.replace(
+        '#include <common>',
+        `
+          #include <common>
+
+          uniform float uTime;
+
+          mat2 get2dRotateMatrix(float _angle)
+          {
+              return mat2(cos(_angle), - sin(_angle), sin(_angle), cos(_angle));
+          }
+      `,
+      )
+      shader.vertexShader = shader.vertexShader.replace(
+        '#include <beginnormal_vertex>',
+        `
+      #include <beginnormal_vertex>
+
+      float angle = (position.y + uTime) * 0.9;
+      mat2 rotateMatrix = get2dRotateMatrix(angle);
+
+      objectNormal.xz = rotateMatrix * objectNormal.xz;
+      `,
+      )
+      shader.vertexShader = shader.vertexShader.replace(
+        '#include <begin_vertex>',
+        `
+      #include <begin_vertex>
+
+      transformed.xz = rotateMatrix * transformed.xz;
+      `,
+      )
+      shaderRef.current = shader
+    }
+  }, [materialRef, shaderRef])
+
+  return <meshStandardMaterial ref={materialRef} color='green' />
+}
+
 export function KelpForest({ amount = 1 }) {
   const { nodes } = useKelp()
 
@@ -88,7 +164,9 @@ export function KelpForest({ amount = 1 }) {
   return (
     <instancedMesh ref={ref} args={[kelpGeometry, null, amount]}>
       {/* <shaderMaterial vertexShader={kelpVert} fragmentShader={kelpFrag} uniforms={uniforms} /> */}
-      <KelpShaderMaterial />
+      {/* <KelpShaderMaterial /> */}
+      {/* <KelpSimpleShaderMaterial /> */}
+      <ExtendedKelpMaterial />
     </instancedMesh>
   )
 }
