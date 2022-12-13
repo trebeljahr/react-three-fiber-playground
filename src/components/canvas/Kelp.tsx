@@ -15,12 +15,16 @@ import { forwardRef, useEffect, useMemo, useRef } from 'react'
 import {
   BufferGeometry,
   InstancedMesh,
+  MeshPhysicalMaterial,
   MeshStandardMaterial,
   Object3D,
   Shader,
   ShaderMaterial,
   UniformsLib,
 } from 'three'
+import CustomShaderMaterial from 'three-custom-shader-material'
+import CustomShaderMaterialType from 'three-custom-shader-material/vanilla'
+
 import { randFloat } from 'three/src/math/MathUtils'
 
 interface DisplacementLayerProps extends LayerProps {
@@ -171,6 +175,31 @@ export function SingleKelp() {
   )
 }
 
+export function AnotherTryAtShaderMaterials() {
+  const materialRef = useRef<CustomShaderMaterialType>()
+
+  useFrame((state) => {
+    if (materialRef.current) {
+      materialRef.current.uniforms.uTime.value = state.clock.elapsedTime
+    }
+  })
+
+  return (
+    <CustomShaderMaterial
+      ref={materialRef}
+      baseMaterial={MeshPhysicalMaterial}
+      vertexShader={kelpVert}
+      fragmentShader={kelpFrag}
+      uniforms={{
+        uTime: {
+          value: 0,
+        },
+      }}
+      flatShading
+      color={0xff00ff}
+    />
+  )
+}
 export function KelpShaderMaterialForInstances() {
   const shaderRef = useRef<ShaderMaterial>()
 
@@ -231,7 +260,8 @@ export function KelpForest({ amount = 100, size = 100 }) {
       {/* <KelpShaderMaterial /> */}
       {/* <KelpSimpleShaderMaterial /> */}
       {/* <ExtendedKelpMaterial /> */}
-      <KelpShaderMaterialForInstances />
+      {/* <KelpShaderMaterialForInstances /> */}
+      <AnotherTryAtShaderMaterials />
       {/* <MeshWobbleMaterial color='#f25042' speed={1} factor={0.6} /> */}
     </instancedMesh>
   )
