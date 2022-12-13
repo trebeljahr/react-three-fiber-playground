@@ -6,8 +6,7 @@ uniform float fogFar;
 varying float v_fogDepth;
 
 void main() {
-  if (gl_FragColor.a < 0.51)
-    discard;
+  // if (gl_FragColor.a < 0.51) discard;
   gl_FragColor.a = 1.0;
 
   vec3 green = vec3(0.55, 0.71, 0.3);
