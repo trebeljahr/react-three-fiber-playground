@@ -196,7 +196,7 @@ export function AnotherTryAtShaderMaterials() {
         },
       }}
       flatShading
-      color={0xff00ff}
+      color={'#4CBB17'}
     />
   )
 }
@@ -228,8 +228,21 @@ export function KelpShaderMaterialForInstances() {
   )
 }
 
-export function KelpForest({ amount = 100, size = 100 }) {
+import FastPoissonDiskSampling from 'fast-2d-poisson-disk-sampling'
+
+export function KelpForest({ size = 100 }) {
   const { nodes } = useKelp()
+
+  const points = useMemo(() => {
+    const sampler = new FastPoissonDiskSampling({
+      shape: [size, size],
+      radius: 5,
+      tries: 20,
+    })
+    const result = sampler.fill()
+    console.log(result)
+    return result
+  }, [size])
 
   const kelpGeometry = nodes.Object_7.geometry
 
@@ -238,11 +251,13 @@ export function KelpForest({ amount = 100, size = 100 }) {
   useEffect(() => {
     const temp = new Object3D()
 
-    for (let i = 0; i < amount; i++) {
+    for (let i = 0; i < points.length; i++) {
       const scale = randFloat(0.2, 0.3)
 
       //   temp.position.set(0, 0, 0)
-      temp.position.set(randFloat(-size, size), 0, randFloat(-size, size))
+      // temp.position.set(randFloat(-size, size), 0, randFloat(-size, size))
+      const [x, z] = points[i]
+      temp.position.set(x - size / 2, 0, z - size / 2)
       temp.rotation.set(0, randFloat(0.2, 0.5), 0)
       temp.scale.set(scale, scale, scale)
 
@@ -252,10 +267,10 @@ export function KelpForest({ amount = 100, size = 100 }) {
     }
 
     ref.current.instanceMatrix.needsUpdate = true
-  }, [amount, size])
+  }, [size, points])
 
   return (
-    <instancedMesh ref={ref} args={[kelpGeometry, null, amount]}>
+    <instancedMesh ref={ref} args={[kelpGeometry, null, points.length]}>
       {/* <shaderMaterial vertexShader={kelpVert} fragmentShader={kelpFrag} uniforms={uniforms} /> */}
       {/* <KelpShaderMaterial /> */}
       {/* <KelpSimpleShaderMaterial /> */}
