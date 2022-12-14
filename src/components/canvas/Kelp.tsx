@@ -198,7 +198,7 @@ export function AnotherTryAtShaderMaterials() {
       ref={materialRef}
       baseMaterial={MeshPhysicalMaterial}
       vertexShader={kelpVert}
-      fragmentShader={kelpFrag}
+      // fragmentShader={kelpFrag}
       uniforms={uniforms}
       flatShading
       color={'#4CBB17'}
