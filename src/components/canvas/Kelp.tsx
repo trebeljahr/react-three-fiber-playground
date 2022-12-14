@@ -196,7 +196,7 @@ export function AnotherTryAtShaderMaterials() {
         },
       }}
       flatShading
-      color={'#4CBB17'}
+      // color={'#4CBB17'}
     />
   )
 }

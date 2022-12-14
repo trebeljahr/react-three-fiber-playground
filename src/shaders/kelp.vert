@@ -1,14 +1,18 @@
 precision mediump float;
 
-uniform float u_time;
+uniform float uTime;
 
 void main() {
 
-  vec4 modelPosition = modelMatrix * vec4(position, 1.0);
-  modelPosition.x += sin(modelPosition.y * 4.0 + u_time) * 0.8;
+  vec3 modifiedPosition = position;
+  modifiedPosition.x = modifiedPosition.x + 100.0;
+
+  vec4 modelPosition = modelMatrix * vec4(modifiedPosition, 1.0);
+  // float offset = smoothstep(1, -1, )
 
   vec4 viewPosition = viewMatrix * modelPosition;
   vec4 projectedPosition = projectionMatrix * viewPosition;
 
+  projectedPosition.x = projectedPosition.x + 50.0;
   gl_Position = projectedPosition;
 }

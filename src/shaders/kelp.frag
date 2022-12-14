@@ -1,3 +1,6 @@
 precision mediump float;
 
-void main() { gl_FragColor = vec4(vec3(0.0118, 0.9451, 0.4471), 1.0); }
+void main() {
+  vec3 green = vec3(0.0118, 0.9451, 1.0);
+  gl_FragColor = vec4(green, 1.0);
+}
