@@ -5,14 +5,9 @@ uniform float uTime;
 void main() {
 
   vec3 modifiedPosition = position;
-  modifiedPosition.x = modifiedPosition.x + 100.0;
+  modifiedPosition.x += sin(uTime) * 10.0;
 
-  vec4 modelPosition = modelMatrix * vec4(modifiedPosition, 1.0);
-  // float offset = smoothstep(1, -1, )
+  // gl_Position = projectedPosition;
 
-  vec4 viewPosition = viewMatrix * modelPosition;
-  vec4 projectedPosition = projectionMatrix * viewPosition;
-
-  projectedPosition.x = projectedPosition.x + 50.0;
-  gl_Position = projectedPosition;
+  csm_Position = modifiedPosition;
 }

@@ -184,32 +184,33 @@ export function AnotherTryAtShaderMaterials() {
     }
   })
 
+  const uniforms = useMemo(
+    () => ({
+      uTime: {
+        value: 0,
+      },
+    }),
+    [],
+  )
+
   return (
     <CustomShaderMaterial
       ref={materialRef}
       baseMaterial={MeshPhysicalMaterial}
       vertexShader={kelpVert}
       fragmentShader={kelpFrag}
-      uniforms={{
-        uTime: {
-          value: 0,
-        },
-      }}
+      uniforms={uniforms}
       flatShading
-      // color={'#4CBB17'}
+      color={'#4CBB17'}
     />
   )
 }
 export function KelpShaderMaterialForInstances() {
   const shaderRef = useRef<ShaderMaterial>()
 
-  console.log(kelpInstanceFrag)
-  console.log(kelpInstanceVert)
-
   useFrame((_, delta) => {
     if (shaderRef.current) {
       shaderRef.current.uniforms.uTime.value += delta
-      //   console.log(shaderRef.current.uniforms.uTime.value)
     }
   })
 
