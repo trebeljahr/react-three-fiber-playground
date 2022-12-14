@@ -103,7 +103,6 @@ export function ExtendedKelpMaterial() {
   useFrame((_, delta) => {
     if (shaderRef.current) {
       shaderRef.current.uniforms.uTime.value += delta
-      //   console.log(shaderRef.current.uniforms.uTime.value)
     }
   })
 
@@ -216,8 +215,6 @@ export function KelpShaderMaterialForInstances() {
 
   const uniforms = { ...UniformsLib['fog'], uTime: { value: 0 } }
 
-  console.log(uniforms)
-
   return (
     <shaderMaterial
       ref={shaderRef}
@@ -231,17 +228,16 @@ export function KelpShaderMaterialForInstances() {
 
 import FastPoissonDiskSampling from 'fast-2d-poisson-disk-sampling'
 
-export function KelpForest({ size = 100 }) {
+export function KelpForest({ size = 150 }) {
   const { nodes } = useKelp()
 
   const points = useMemo(() => {
     const sampler = new FastPoissonDiskSampling({
       shape: [size, size],
-      radius: 5,
-      tries: 20,
+      radius: 8,
+      tries: 10,
     })
     const result = sampler.fill()
-    console.log(result)
     return result
   }, [size])
 

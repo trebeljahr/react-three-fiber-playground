@@ -1,5 +1,5 @@
+import { KeyboardControls, Preload } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
-import { KeyboardControls, Preload, Sky } from '@react-three/drei'
 
 export default function Scene({ children, ...props }) {
   return (
@@ -15,7 +15,6 @@ export default function Scene({ children, ...props }) {
       ]}>
       <Canvas {...props} gl={{ logarithmicDepthBuffer: true }}>
         <ambientLight />
-        <pointLight position={[10, 10, 10]} />
         {children}
         <Preload all />
       </Canvas>
