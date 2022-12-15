@@ -9,6 +9,7 @@ const SPEED = 5
 const direction = new Vector3()
 const frontVector = new Vector3()
 const sideVector = new Vector3()
+const updownVector = new Vector3()
 
 export function SwimmingPlayerControls({ children }: PropsWithChildren) {
   const [subscribe, get] = useKeyboardControls()
@@ -37,6 +38,7 @@ export function SwimmingPlayerControls({ children }: PropsWithChildren) {
 
     frontVector.set(0, 0, +backward - +forward)
     sideVector.set(+left - +right, 0, 0)
+    updownVector.set(0, +jump - +descend, 0)
 
     const desiredSpeed = sprint ? 2 : 1
     lerpConstant.current += 0.1
@@ -46,11 +48,12 @@ export function SwimmingPlayerControls({ children }: PropsWithChildren) {
     direction
       .subVectors(frontVector, sideVector)
       .applyEuler(camera.rotation)
-      .add(new Vector3(0, +jump - +descend, 0))
+      .add(updownVector)
       .normalize()
       .multiplyScalar(SPEED * speedFactor.current)
 
     ref.current.setLinvel({ x: direction.x, y: direction.y, z: direction.z })
+    // console.log(gl.info.memory.geometries)
   })
 
   return (
