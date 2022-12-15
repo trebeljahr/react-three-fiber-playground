@@ -10,7 +10,8 @@ export default function Scene({ children, ...props }) {
         { name: 'left', keys: ['ArrowLeft', 'a', 'A'] },
         { name: 'right', keys: ['ArrowRight', 'd', 'D'] },
         { name: 'jump', keys: ['Space'] },
-        { name: 'descend', keys: ['c', 'C', 'Shift'] },
+        { name: 'descend', keys: ['c', 'C'] },
+        { name: 'sprint', keys: ['Shift'] },
         { name: 'attack', keys: ['F', 'f'] },
       ]}>
       <Canvas {...props} gl={{ logarithmicDepthBuffer: true }}>

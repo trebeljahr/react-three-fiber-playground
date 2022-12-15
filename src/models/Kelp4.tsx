@@ -22,7 +22,12 @@ type GLTFResult = GLTF & {
 }
 
 export function useKelp() {
-  return useGLTF('/kelp4.glb') as unknown as GLTFResult
+  const {
+    nodes: {
+      Object_7: { geometry },
+    },
+  } = useGLTF('/kelp4.glb') as unknown as GLTFResult
+  return { geometry }
 }
 
 export function Kelp4(props: JSX.IntrinsicElements['group']) {

@@ -1,32 +1,8 @@
-import { useBeachMaterial } from '@models/useBeachMaterial'
-import { Box, Sky } from '@react-three/drei'
-import { Debug, Physics, RigidBody } from '@react-three/rapier'
-import { DoubleSide } from 'three'
+import { Sky } from '@react-three/drei'
+import { Debug, Physics } from '@react-three/rapier'
 import { ImprovedPlayerController } from './PlayerController'
+import { Floor } from './Terrain'
 import { InstancedTreesWithPhysics } from './TreeStuff'
-
-export const Floor = () => {
-  return (
-    <RigidBody type='fixed' colliders='cuboid'>
-      <Box position={[0, -5, 0]} scale={[200, 10, 200]} rotation={[0, 0, 0]} receiveShadow>
-        <meshBasicMaterial color='#7EC850' />
-      </Box>
-    </RigidBody>
-  )
-}
-
-export function Plane() {
-  const {
-    materials: { aerial_beach_01: beachMaterial },
-  } = useBeachMaterial()
-
-  return (
-    <mesh position={[0, 0, 0]} material={beachMaterial} rotation={[Math.PI / 2, 0, 0]} scale={[1000, 1000, 1000]}>
-      <planeGeometry />
-      {/* <meshBasicMaterial color='#C2B280' side={DoubleSide} /> */}
-    </mesh>
-  )
-}
 
 export default function ThirdPersonDemo() {
   return (
