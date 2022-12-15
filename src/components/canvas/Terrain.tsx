@@ -17,14 +17,10 @@ export const Floor = () => {
 }
 
 export const viewDistance: number = 2
-export const scale: number = 70
+export const scale: number = 60
 
 function computeChunkCoordinates(pos: Vector3) {
   return new Vector2(Math.floor(pos.x / scale) * scale, Math.floor(pos.z / scale) * scale)
-}
-
-function key(pos: Vector2) {
-  return `${pos.x},${pos.y}`
 }
 
 const maxDistance = scale * (viewDistance !== 0 ? viewDistance : 1)
@@ -65,7 +61,7 @@ export function Terrain() {
       }
     }
 
-    console.log(chunksNeeded.length)
+    // console.log(chunksNeeded.length)
 
     let changed = false
     let i = 0
@@ -79,10 +75,6 @@ export function Terrain() {
 
     if (changed) setChunks(chunksCopy)
   })
-
-  useEffect(() => {
-    console.log(Object.keys(chunks))
-  }, [chunks])
 
   return (
     <>

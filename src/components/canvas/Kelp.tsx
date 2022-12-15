@@ -1,6 +1,8 @@
 import { useKelp } from '@models/Kelp4'
 import { useFrame, useThree } from '@react-three/fiber'
 import kelpVert from '@shaders/kelp.vert'
+import kelpFrag from '@shaders/kelp.frag'
+
 import FastPoissonDiskSampling from 'fast-2d-poisson-disk-sampling'
 import { memo, useEffect, useMemo, useRef } from 'react'
 import {
@@ -43,6 +45,7 @@ export function CustomKelpShaderMaterial() {
       ref={materialRef}
       baseMaterial={MeshPhysicalMaterial}
       vertexShader={kelpVert}
+      fragmentShader={kelpFrag}
       uniforms={uniforms}
       flatShading
       color={'#4CBB17'}
@@ -63,8 +66,8 @@ export function KelpForest({ size = 150 }) {
   const points = useMemo(() => {
     const sampler = new FastPoissonDiskSampling({
       shape: [size, size],
-      radius: 8,
-      tries: 10,
+      radius: 30,
+      tries: 5,
     })
     const result = sampler.fill()
     console.log(result.length)
@@ -165,7 +168,7 @@ export const SingleKelpTile = memo<{ offset?: Vector2 }>(function SingleKelpTile
 
       const temp = new Object3D()
 
-      const localScale = 0.2 // randFloat(0.2, 0.3)
+      const localScale = randFloat(0.2, 0.3)
       temp.position.set(x, 0, z)
       temp.rotation.set(0, 0, 0)
       temp.scale.set(localScale, localScale, localScale)
