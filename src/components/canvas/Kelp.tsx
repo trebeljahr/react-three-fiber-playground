@@ -1,5 +1,5 @@
-import { useKelp } from '@models/Grass'
-import { useFrame, useThree } from '@react-three/fiber'
+import { useKelp } from '@models/Kelp-Leaves'
+import { useFrame } from '@react-three/fiber'
 import kelpFrag from '@shaders/kelp.frag'
 import kelpVert from '@shaders/kelp.vert'
 
@@ -10,13 +10,10 @@ import {
   DoubleSide,
   DynamicDrawUsage,
   InstancedMesh,
-  Matrix4,
   MeshStandardMaterial,
   Object3D,
-  Quaternion,
   ShaderMaterial,
   Vector2,
-  Vector3,
 } from 'three'
 import CustomShaderMaterial from 'three-custom-shader-material'
 import CustomShaderMaterialType from 'three-custom-shader-material/vanilla'
@@ -52,8 +49,6 @@ export function CustomKelpShaderMaterial() {
       vertexShader={kelpVert}
       fragmentShader={kelpFrag}
       uniforms={uniforms}
-      flatShading
-      color={'#4CBB17'}
     />
   )
 }
@@ -85,10 +80,10 @@ export const SingleKelpTile = memo<{ offset?: Vector2 }>(function SingleKelpTile
     points.forEach(([px, pz], i) => {
       const [x, z] = [px - scale / 2 + offset.x, pz - scale / 2 + offset.y]
 
-      const localScale = randFloat(1, 2)
+      const localScale = randFloat(0.2, 0.3)
       temp.position.set(x, 0, z)
       temp.rotation.set(Math.PI / 2, 0, randFloat(0, Math.PI * 2))
-      temp.scale.set(localScale, localScale * 10, localScale)
+      temp.scale.set(localScale * 2.3, localScale, localScale * 3)
 
       temp.updateMatrix()
 

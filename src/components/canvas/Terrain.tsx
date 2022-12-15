@@ -86,6 +86,7 @@ export function Terrain() {
           </group>
         )
       })}
+      <Box args={[1, 1, 1]}></Box>
     </>
   )
 }
