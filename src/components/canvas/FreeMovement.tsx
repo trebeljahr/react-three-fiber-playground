@@ -2,7 +2,7 @@ import { Whale } from '@models/fish_pack'
 import { Environment, PointerLockControls } from '@react-three/drei'
 import { Physics } from '@react-three/rapier'
 import { FlyingPlayer } from './FlyingPlayer'
-import { KelpForest } from './Kelp'
+import { KelpForest, SingleKelpTile } from './Kelp'
 import { Perf } from 'r3f-perf'
 import { Terrain } from './Terrain'
 
@@ -32,6 +32,7 @@ export default function FreeMovement() {
       {/* <KelpForest /> */}
 
       {/* <SingleKelp /> */}
+      {/* <SingleKelpTile /> */}
       <Terrain />
       {/* <Effects /> */}
     </>

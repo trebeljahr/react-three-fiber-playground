@@ -12,11 +12,13 @@ import {
   Object3D,
   Quaternion,
   ShaderMaterial,
+  Vector2,
   Vector3,
 } from 'three'
 import CustomShaderMaterial from 'three-custom-shader-material'
 import CustomShaderMaterialType from 'three-custom-shader-material/vanilla'
 import { randFloat } from 'three/src/math/MathUtils'
+import { scale } from './Terrain'
 
 export function CustomKelpShaderMaterial() {
   const materialRef = useRef<CustomShaderMaterialType>()
@@ -128,6 +130,52 @@ export function KelpForest({ size = 150 }) {
       ref.current.instanceMatrix.needsUpdate = needsUpdate
     }
   })
+
+  return (
+    <instancedMesh ref={ref} args={[kelpGeometry, null, points.length]}>
+      <CustomKelpShaderMaterial />
+    </instancedMesh>
+  )
+}
+
+export function SingleKelpTile({ offset = new Vector2(0, 0) }) {
+  const ref = useRef<InstancedMesh<BufferGeometry, ShaderMaterial>>()
+
+  const result = useKelp()
+  const { geometry } = result
+
+  const kelpGeometry = geometry
+
+  const points = useMemo(() => {
+    const sampler = new FastPoissonDiskSampling({
+      shape: [scale, scale],
+      radius: 15,
+      tries: 5,
+    })
+    const points = sampler.fill() as [number, number][]
+
+    return points
+  }, [])
+
+  useEffect(() => {
+    points.forEach(([px, pz], i) => {
+      const [x, z] = [px - scale / 2 + offset.x, pz - scale / 2 + offset.y]
+
+      const temp = new Object3D()
+
+      const localScale = 0.2 // randFloat(0.2, 0.3)
+      temp.position.set(x, 0, z)
+      temp.rotation.set(0, 0, 0)
+      temp.scale.set(localScale, localScale, localScale)
+
+      temp.updateMatrix()
+
+      ref.current.setMatrixAt(i, temp.matrix)
+    })
+
+    ref.current.instanceMatrix.setUsage(DynamicDrawUsage)
+    ref.current.instanceMatrix.needsUpdate = true
+  }, [offset, points])
 
   return (
     <instancedMesh ref={ref} args={[kelpGeometry, null, points.length]}>
