@@ -1,7 +1,7 @@
 import { Whale } from '@models/fish_pack'
 import { Environment, PointerLockControls } from '@react-three/drei'
 import { Physics } from '@react-three/rapier'
-import { FlyingPlayer } from './FlyingPlayer'
+import { MinecraftCreativeControlsPlayer, SwimmingPlayerControls } from './FlyingPlayer'
 import { KelpForest, SingleKelpTile } from './Kelp'
 import { Perf } from 'r3f-perf'
 import { Terrain } from './Terrain'
@@ -18,11 +18,11 @@ export default function FreeMovement() {
     <>
       <Environment near={1} far={1000} resolution={256} preset='forest' />
       <Physics>
-        <FlyingPlayer />
+        {/* <MinecraftCreativeControlsPlayer /> */}
+        <SwimmingPlayerControls />
       </Physics>
       <Perf />
 
-      <PointerLockControls />
       <fogExp2 attach='fog' color='#0086ad' density={0.02} />
       <color attach='background' args={['#0086ad']} />
       {/* <Sky azimuth={1} inclination={0.6} distance={1000} /> */}
