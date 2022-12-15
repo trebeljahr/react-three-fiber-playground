@@ -3,8 +3,8 @@ import { Environment, PointerLockControls } from '@react-three/drei'
 import { Physics } from '@react-three/rapier'
 import { FlyingPlayer } from './FlyingPlayer'
 import { KelpForest } from './Kelp'
-import { Plane } from './ThirdPersonDemo'
 import { Perf } from 'r3f-perf'
+import { Terrain } from './Terrain'
 
 // color palette underwater
 // #daf8e3
@@ -29,10 +29,10 @@ export default function FreeMovement() {
       {/* <Box args={[1, 1, 1]} /> */}
       {/* <InstancedWhale scale={[100, 100, 100]} position={[0, 0, 0]} /> */}
       {/* <Whale scale={[5, 5, 5]} position={[0, 60, 0]} /> */}
-      <KelpForest />
+      {/* <KelpForest /> */}
 
       {/* <SingleKelp /> */}
-      <Plane />
+      <Terrain />
       {/* <Effects /> */}
     </>
   )
