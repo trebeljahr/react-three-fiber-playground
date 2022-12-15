@@ -37,10 +37,9 @@ export function Terrain() {
   useFrame(() => {
     const cPos = computeChunkCoordinates(camera.position)
     for (let i in chunks) {
-      //   console.log(maxDistance)
-      //   console.log(cPos.x - chunks[i].x)
       if (Math.abs(cPos.x - chunks[i].x) > maxDistance || Math.abs(cPos.y - chunks[i].y) > maxDistance) {
-        console.log('too far')
+        // console.log('too far')
+
         setChunks((old) => {
           const copy = { ...old }
           delete copy[i]

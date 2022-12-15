@@ -2,7 +2,7 @@ import { useKelp } from '@models/Kelp4'
 import { useFrame, useThree } from '@react-three/fiber'
 import kelpVert from '@shaders/kelp.vert'
 import FastPoissonDiskSampling from 'fast-2d-poisson-disk-sampling'
-import { useEffect, useMemo, useRef } from 'react'
+import { memo, useEffect, useMemo, useRef } from 'react'
 import {
   BufferGeometry,
   DynamicDrawUsage,
@@ -138,7 +138,9 @@ export function KelpForest({ size = 150 }) {
   )
 }
 
-export function SingleKelpTile({ offset = new Vector2(0, 0) }) {
+export const SingleKelpTile = memo<{ offset?: Vector2 }>(function SingleKelpTile({ offset = new Vector2(0, 0) }) {
+  console.log('Rendering... again!')
+
   const ref = useRef<InstancedMesh<BufferGeometry, ShaderMaterial>>()
 
   const result = useKelp()
@@ -149,7 +151,7 @@ export function SingleKelpTile({ offset = new Vector2(0, 0) }) {
   const points = useMemo(() => {
     const sampler = new FastPoissonDiskSampling({
       shape: [scale, scale],
-      radius: 15,
+      radius: 10,
       tries: 5,
     })
     const points = sampler.fill() as [number, number][]
@@ -182,4 +184,4 @@ export function SingleKelpTile({ offset = new Vector2(0, 0) }) {
       <CustomKelpShaderMaterial />
     </instancedMesh>
   )
-}
+})
