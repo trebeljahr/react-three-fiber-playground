@@ -4,6 +4,7 @@ import { Physics } from '@react-three/rapier'
 import { FlyingPlayer } from './FlyingPlayer'
 import { KelpForest } from './Kelp'
 import { Plane } from './ThirdPersonDemo'
+import { Perf } from 'r3f-perf'
 
 // color palette underwater
 // #daf8e3
@@ -19,13 +20,15 @@ export default function FreeMovement() {
       <Physics>
         <FlyingPlayer />
       </Physics>
+      <Perf />
+
       <PointerLockControls />
       <fogExp2 attach='fog' color='#0086ad' density={0.02} />
       <color attach='background' args={['#0086ad']} />
       {/* <Sky azimuth={1} inclination={0.6} distance={1000} /> */}
       {/* <Box args={[1, 1, 1]} /> */}
       {/* <InstancedWhale scale={[100, 100, 100]} position={[0, 0, 0]} /> */}
-      <Whale scale={[5, 5, 5]} position={[0, 60, 0]} />
+      {/* <Whale scale={[5, 5, 5]} position={[0, 60, 0]} /> */}
       <KelpForest />
 
       {/* <SingleKelp /> */}

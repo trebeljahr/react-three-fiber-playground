@@ -20,6 +20,12 @@ type GLTFResult = GLTF & {
   }
 }
 
+export function useKelp() {
+  const { nodes, materials } = useGLTF('/kelp3.glb') as unknown as GLTFResult
+
+  return { nodes, materials }
+}
+
 export function Kelp3(props: JSX.IntrinsicElements['group']) {
   const { nodes, materials } = useGLTF('/kelp3.glb') as unknown as GLTFResult
   return (

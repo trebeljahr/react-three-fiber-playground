@@ -51,8 +51,11 @@ export function CustomKelpShaderMaterial() {
 export function KelpForest({ size = 150 }) {
   const ref = useRef<InstancedMesh<BufferGeometry, ShaderMaterial>>()
 
-  const { nodes } = useKelp()
-  const kelpGeometry = nodes.Object_7.geometry
+  const result = useKelp()
+  const { geometry } = result
+  console.log(result)
+
+  const kelpGeometry = geometry
 
   // const points = useMemo(() => [[0, 0]], [])
   const points = useMemo(() => {
