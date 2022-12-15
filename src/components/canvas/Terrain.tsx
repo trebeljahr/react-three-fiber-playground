@@ -29,58 +29,66 @@ function key(pos: Vector2) {
 
 const maxDistance = scale * (viewDistance !== 0 ? viewDistance : 1)
 
+type Chunk = {
+  id: number
+  offset: Vector2
+}
+
 export function Terrain() {
-  const [chunks, setChunks] = useState<Record<string, Vector2>>({})
+  const [chunks, setChunks] = useState<Chunk[]>(() => {
+    const tempPoints = [] as Chunk[]
+
+    let i = 0
+    for (let x = -viewDistance; x <= viewDistance; x++) {
+      for (let y = -viewDistance; y <= viewDistance; y++) {
+        tempPoints.push({ offset: new Vector2(x * scale, y * scale), id: i++ })
+      }
+    }
+
+    return tempPoints
+  })
 
   const { camera } = useThree()
 
   useFrame(() => {
-    const cPos = computeChunkCoordinates(camera.position)
-    for (let i in chunks) {
-      if (Math.abs(cPos.x - chunks[i].x) > maxDistance || Math.abs(cPos.y - chunks[i].y) > maxDistance) {
-        // console.log('too far')
-
-        setChunks((old) => {
-          const copy = { ...old }
-          delete copy[i]
-          return copy
+    const camPos = computeChunkCoordinates(camera.position)
+    const chunksNeeded = [] as Vector2[]
+    for (let x = -viewDistance; x <= viewDistance; x++) {
+      for (let y = -viewDistance; y <= viewDistance; y++) {
+        const chunkPos = new Vector2(x * scale + camPos.x, y * scale + camPos.y)
+        const exists = chunks.find(({ offset }) => {
+          return offset.x === chunkPos.x && offset.y === chunkPos.y
         })
-      }
-
-      for (let x = -viewDistance; x <= viewDistance; x++) {
-        for (let y = -viewDistance; y <= viewDistance; y++) {
-          const newPosition = new Vector2(x * scale + cPos.x, y * scale + cPos.y)
-          if (!chunks[key(newPosition)]) {
-            setChunks((old) => {
-              return { ...old, [key(newPosition)]: newPosition }
-            })
-          }
+        if (!exists) {
+          chunksNeeded.push(chunkPos)
         }
       }
     }
+
+    console.log(chunksNeeded.length)
+
+    let changed = false
+    let i = 0
+    const chunksCopy = chunks.map((chunk) => {
+      if (Math.abs(camPos.x - chunk.offset.x) > maxDistance || Math.abs(camPos.y - chunk.offset.y) > maxDistance) {
+        changed = true
+        return { ...chunk, offset: chunksNeeded[i++] }
+      }
+      return chunk
+    })
+
+    if (changed) setChunks(chunksCopy)
   })
 
   useEffect(() => {
     console.log(Object.keys(chunks))
   }, [chunks])
 
-  useEffect(() => {
-    const tempPoints: Record<string, Vector2> = {}
-
-    for (let x = -viewDistance; x <= viewDistance; x++) {
-      for (let z = -viewDistance; z <= viewDistance; z++) {
-        const newPosition = new Vector2(x * scale, z * scale)
-        tempPoints[key(newPosition)] = newPosition
-      }
-    }
-    setChunks(tempPoints)
-  }, [])
-
   return (
     <>
-      {Object.values(chunks).map((offset) => {
+      {Object.values(chunks).map((chunk) => {
         return (
-          <group position={new Vector3(offset.x, 0, offset.y)} key={key(offset)}>
+          <group position={new Vector3(chunk.offset.x, 0, chunk.offset.y)} key={chunk.id}>
             <SingleKelpTile />
             <Plane />
           </group>
