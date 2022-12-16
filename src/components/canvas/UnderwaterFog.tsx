@@ -1,4 +1,5 @@
 import { useDepthBuffer } from '@react-three/drei'
+import { useThree } from '@react-three/fiber'
 import fragmentShader from '@shaders/sampleDepthBuffer.frag'
 import { Effect } from 'postprocessing'
 import { forwardRef, useMemo } from 'react'
@@ -21,7 +22,12 @@ class UnderwaterFog extends Effect {
 }
 
 export const UnderWaterFogEffect = () => {
-  const depthBuffer = useDepthBuffer({ frames: Infinity })
+  // const dpr = useThree((state) => state.viewport.dpr)
+  // const { width, height } = useThree((state) => state.size)
+  // const w = width * dpr
+  // const h = height * dpr
+  const depthBuffer = useDepthBuffer({ size: null })
+
   const effect = useMemo(() => new UnderwaterFog({ depthBuffer }), [depthBuffer])
 
   return <primitive object={effect} />
