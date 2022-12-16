@@ -37,20 +37,20 @@ export default function FreeMovement() {
         setUnderwater(false)
         console.log('Transition out of water!!!')
 
-        // fogRef.current.density = 0.000001
-        // fogRef.current.density = 0.000001
-        // fogRef.current.color = new Color('white')
-        // scene.background = new Color('white')
+        fogRef.current.density = 0.000001
+        fogRef.current.density = 0.000001
+        fogRef.current.color = new Color('white')
+        scene.background = new Color('white')
       }
     } else {
       if (!underwater) {
         //fogRef.current.color.equals(new Color('white'))) {
         setUnderwater(true)
 
-        // fogRef.current.density = 0.02
-        // fogRef.current.density = 0.02
-        // fogRef.current.color = new Color('#0086ad')
-        // scene.background = new Color('#0086ad')
+        fogRef.current.density = 0.02
+        fogRef.current.density = 0.02
+        fogRef.current.color = new Color('#0086ad')
+        scene.background = new Color('#0086ad')
       }
     }
   })
@@ -64,16 +64,16 @@ export default function FreeMovement() {
       </Physics>
       <Perf />
 
+      <fogExp2 ref={fogRef} attach='fog' color='#0086ad' density={0.02} />
+      <color ref={colorRef} attach='background' args={['#0086ad']} />
+      <Terrain />
+      <Ocean position={[0, waterHeight, 0]} />
+
       {underwater ? (
-        <>
-          <fogExp2 ref={fogRef} attach='fog' color='#0086ad' density={0.02} />
-          <color ref={colorRef} attach='background' args={['#0086ad']} />
-          <Terrain />
-        </>
+        <></>
       ) : (
         <>
           <Sky ref={skyRef} azimuth={1} inclination={0.6} distance={2000} />
-          <Ocean position={[0, waterHeight, 0]} />
         </>
       )}
 
