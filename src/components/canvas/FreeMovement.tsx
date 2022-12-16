@@ -33,8 +33,8 @@ export default function FreeMovement() {
       {/* <KelpForest /> */}
       {/* <SingleKelp /> */}
       {/* <SingleKelpTile /> */}
-      <Terrain />
       {/* <DepthBufferEffect /> */}
+      <Terrain />
       <Effects />
     </>
   )
