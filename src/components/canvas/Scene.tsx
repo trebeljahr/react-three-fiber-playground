@@ -14,7 +14,7 @@ export default function Scene({ children, ...props }) {
         { name: 'sprint', keys: ['Shift'] },
         { name: 'attack', keys: ['F', 'f'] },
       ]}>
-      <Canvas {...props} gl={{ logarithmicDepthBuffer: true }}>
+      <Canvas {...props} camera={{ far: 600, near: 0.1 }} gl={{ logarithmicDepthBuffer: true }}>
         <ambientLight />
         {children}
         <Preload all />

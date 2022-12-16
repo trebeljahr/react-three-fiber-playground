@@ -12,7 +12,6 @@ void mainImage(const in vec4 inputC, const in vec2 uv, out vec4 outputC) {
   // float factor = sin((depth * PI) / 2.0);
   // float t = 1.0 - exp(-_DepthFogDensity * depth);
   vec4 blue = vec4(0.0, 0.2, 0.4, 1.0);
-
   outputC = mix(inputC, blue, depth * depth);
 
   // 1.0 - exp(-_DepthFogDensity * depth));
@@ -20,5 +19,7 @@ void mainImage(const in vec4 inputC, const in vec2 uv, out vec4 outputC) {
   // outputC = mix(inputC, vec4(0.1, 0.4, 0.5, 1.0), factor);
 
   // vec4 intermediate = input * blue;
-  // output = vec4(depth, depth, depth, 1.0);
+
+  // debugging!
+  outputC = vec4(depth, depth, depth, 1.0);
 }

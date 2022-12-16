@@ -5,8 +5,8 @@ import { PlaneGeometry, RepeatWrapping, TextureLoader, Vector3 } from 'three'
 
 extend({ Water })
 
-export function Ocean() {
-  const ref = useRef()
+export function Ocean({ position = [0, 0, 0] }) {
+  const ref = useRef<Water>()
   const gl = useThree((state) => state.gl)
   const waterNormals = useLoader(TextureLoader, '/waternormals.jpeg')
   waterNormals.wrapS = waterNormals.wrapT = RepeatWrapping
@@ -20,16 +20,17 @@ export function Ocean() {
       sunColor: 0xffffff,
       waterColor: 0x001e0f,
       distortionScale: 3.7,
-      fog: false,
-      // @ts-ignore:next-line
-      format: gl.encoding,
+      fog: true,
+      format: gl.outputEncoding,
     }),
-    // @ts-ignore:next-line
-    [waterNormals, gl.encoding],
+    [waterNormals, gl.outputEncoding],
   )
-  // @ts-ignore:next-line
-  useFrame((state, delta) => (ref.current.material.uniforms.time.value += delta))
+  useFrame((state, delta) => {
+    if (ref.current) {
+      ref.current.material.uniforms.time.value += delta
+    }
+  })
 
-  // @ts-ignore:next-line
-  return <water ref={ref} args={[geom, config]} rotation-x={-Math.PI / 2} />
+  // @ts-ignore: next-line
+  return <water ref={ref} args={[geom, config]} rotation-x={-Math.PI / 2} position={position} />
 }
