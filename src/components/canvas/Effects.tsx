@@ -39,7 +39,7 @@ export function Effects() {
     <>
       <Sun ref={ref} />
       {current && (
-        <EffectComposer multisampling={0}>
+        <EffectComposer multisampling={0} depthBuffer={true}>
           <UnderWaterFogEffect />
           {/* <GodRays
             sun={current}
