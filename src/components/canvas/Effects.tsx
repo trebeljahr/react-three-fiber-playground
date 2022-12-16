@@ -1,8 +1,9 @@
-import { BufferGeometry, Mesh, MeshBasicMaterial, SphereGeometry } from 'three'
 import { useFrame, useThree } from '@react-three/fiber'
-import { forwardRef, MutableRefObject, useEffect, useState } from 'react'
 import { EffectComposer, GodRays } from '@react-three/postprocessing'
 import { BlendFunction, KernelSize, Resolution } from 'postprocessing'
+import { forwardRef, MutableRefObject, useEffect, useState } from 'react'
+import { BufferGeometry, Mesh, MeshBasicMaterial, SphereGeometry } from 'three'
+import { UnderWaterFogEffect } from './UnderwaterFog'
 
 const Sun = forwardRef(function Sun(_, forwardRef: MutableRefObject<Mesh>) {
   useFrame(() => {
@@ -39,7 +40,8 @@ export function Effects() {
       <Sun ref={ref} />
       {current && (
         <EffectComposer multisampling={0}>
-          <GodRays
+          <UnderWaterFogEffect />
+          {/* <GodRays
             sun={current}
             blendFunction={BlendFunction.ADD}
             samples={50}
@@ -52,7 +54,7 @@ export function Effects() {
             height={Resolution.AUTO_SIZE}
             kernelSize={KernelSize.SMALL}
             blur={0.5}
-          />
+          /> */}
         </EffectComposer>
       )}
     </>
