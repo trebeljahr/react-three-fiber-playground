@@ -12,6 +12,7 @@ import { useRef, useState } from 'react'
 import { Color, FogExp2 } from 'three'
 import { Ocean } from './Ocean'
 import { Sky as SkyImpl } from 'three-stdlib'
+import { FBOParticles } from './FBOExperiments/Particles'
 
 // color palette underwater
 // #daf8e3

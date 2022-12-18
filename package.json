@@ -17,6 +17,7 @@
     "@react-three/rapier": "^0.11.1",
     "case": "^1.6.3",
     "fast-2d-poisson-disk-sampling": "^1.0.3",
+    "glsl-curl-noise2": "^0.0.4",
     "glsl-noise": "^0.0.0",
     "glsl-random": "^0.0.5",
     "lamina": "^1.1.23",

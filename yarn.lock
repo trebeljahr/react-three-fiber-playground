@@ -3423,6 +3423,13 @@
     "pify" "^2.0.0"
     "pinkie-promise" "^2.0.0"
 
+"glsl-curl-noise2@^0.0.4":
+  "integrity" "sha512-J3LypqpyDaIKZdKIoSyKiCdAHWnDq9/dmtwj294euTOYsAiXX08W05fc1yddCx2WDC7GwAAN42A40KSYlTNNyg=="
+  "resolved" "https://registry.npmjs.org/glsl-curl-noise2/-/glsl-curl-noise2-0.0.4.tgz"
+  "version" "0.0.4"
+  dependencies:
+    "glsl-noise" "0.0.0"
+
 "glsl-inject-defines@^1.0.1":
   "integrity" "sha512-W49jIhuDtF6w+7wCMcClk27a2hq8znvHtlGnrYkSWEr8tHe9eA2dcnohlcAmxLYBSpSSdzOkRdyPTrx9fw49+A=="
   "resolved" "https://registry.npmjs.org/glsl-inject-defines/-/glsl-inject-defines-1.0.3.tgz"
@@ -3432,7 +3439,7 @@
     "glsl-token-string" "^1.0.1"
     "glsl-tokenizer" "^2.0.2"
 
-"glsl-noise@^0.0.0":
+"glsl-noise@^0.0.0", "glsl-noise@0.0.0":
   "integrity" "sha512-b/ZCF6amfAUb7dJM/MxRs7AetQEahYzJ8PtgfrmEdtw6uyGOr+ZSGtgjFm6mfsBkxJ4d2W7kg+Nlqzqvn3Bc0w=="
   "resolved" "https://registry.npmjs.org/glsl-noise/-/glsl-noise-0.0.0.tgz"
   "version" "0.0.0"
