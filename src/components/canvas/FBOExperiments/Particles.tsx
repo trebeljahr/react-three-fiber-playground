@@ -1,7 +1,6 @@
 import { useFBO } from '@react-three/drei'
 import { createPortal, extend, Object3DNode, useFrame } from '@react-three/fiber'
 import { useMemo, useRef } from 'react'
-import * as THREE from 'three'
 import {
   AdditiveBlending,
   BufferGeometry,
@@ -17,8 +16,8 @@ import {
 import fragmentShader from './shader.frag'
 import vertexShader from './shader.vert'
 
-import simulationFragmentShader from './shaderMaterial.frag'
-import simulationVertexShader from './shaderMaterial.vert'
+import simulationFragmentShader from './simulation.frag'
+import simulationVertexShader from './simulation.vert'
 
 import { SimulationMaterial } from './SimulationMaterial'
 
