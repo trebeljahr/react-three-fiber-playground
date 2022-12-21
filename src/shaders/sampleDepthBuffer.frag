@@ -113,7 +113,7 @@ void mainImage(const in vec4 inputC, const in vec2 uv, out vec4 outputC) {
   // vec4 green = vec4(0.0, 0.2, 0.18, 1);
 
   vec4 bg = background(cam.ray.d) + waterSurface(cam.ray.d);
-  outputC = mix(inputC, bg, clampedDepth);
+  outputC = bg; // mix(inputC, bg, clampedDepth);
 
   // float t = clamp(depth, 0.0, 1.0);
   // outputC = vec4(t, t, t, 1.0);
