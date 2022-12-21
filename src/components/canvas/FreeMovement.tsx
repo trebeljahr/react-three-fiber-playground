@@ -25,7 +25,7 @@ const waterHeight = 100
 
 export default function FreeMovement() {
   const { camera, scene } = useThree()
-  const fogRef = useRef<FogExp2>()
+  // const fogRef = useRef<FogExp2>()
   const colorRef = useRef<Color>()
   const skyRef = useRef<SkyImpl>()
 
@@ -38,9 +38,9 @@ export default function FreeMovement() {
         setUnderwater(false)
         console.log('Transition out of water!!!')
 
-        fogRef.current.density = 0.000001
-        fogRef.current.density = 0.000001
-        fogRef.current.color = new Color('white')
+        // fogRef.current.density = 0.000001
+        // fogRef.current.density = 0.000001
+        // fogRef.current.color = new Color('white')
         scene.background = new Color('white')
       }
     } else {
@@ -48,9 +48,9 @@ export default function FreeMovement() {
         //fogRef.current.color.equals(new Color('white'))) {
         setUnderwater(true)
 
-        fogRef.current.density = 0.02
-        fogRef.current.density = 0.02
-        fogRef.current.color = new Color('#0086ad')
+        // fogRef.current.density = 0.02
+        // fogRef.current.density = 0.02
+        // fogRef.current.color = new Color('#0086ad')
         scene.background = new Color('#0086ad')
       }
     }
@@ -65,8 +65,8 @@ export default function FreeMovement() {
       </Physics>
       <Perf />
 
-      <fogExp2 ref={fogRef} attach='fog' color='#0086ad' density={0.02} />
-      <color ref={colorRef} attach='background' args={['#0086ad']} />
+      {/* <fogExp2 ref={fogRef} attach='fog' color='#0086ad' density={0.02} /> */}
+      <color ref={colorRef} attach='background' args={['#00332E']} />
       <Terrain />
       <Ocean position={[0, waterHeight, 0]} />
 
@@ -85,7 +85,7 @@ export default function FreeMovement() {
       {/* <SingleKelp /> */}
       {/* <SingleKelpTile /> */}
       {/* <DepthBufferEffect /> */}
-      {/* <Effects /> */}
+      <Effects />
     </>
   )
 }
