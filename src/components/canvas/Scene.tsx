@@ -1,6 +1,10 @@
 import { KeyboardControls, Preload } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 
+export const surfaceLevel = 100
+export const farUnderwater = 100
+export const farOverwater = 1000
+
 export default function Scene({ children, ...props }) {
   return (
     <KeyboardControls
@@ -14,7 +18,7 @@ export default function Scene({ children, ...props }) {
         { name: 'sprint', keys: ['Shift'] },
         { name: 'attack', keys: ['F', 'f'] },
       ]}>
-      <Canvas {...props} camera={{ far: 100, near: 0.1 }} gl={{ logarithmicDepthBuffer: true }}>
+      <Canvas {...props} camera={{ far: farUnderwater, near: 0.1 }} gl={{ logarithmicDepthBuffer: true }}>
         <ambientLight />
         {children}
         <Preload all />

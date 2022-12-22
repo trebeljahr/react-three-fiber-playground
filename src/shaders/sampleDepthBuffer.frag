@@ -46,14 +46,9 @@ void cameraSetup(vec2 uv, vec3 position, vec3 lookAt) {
 }
 
 float waterSurface(vec3 r) {
-  if (cameraPos.y > surfaceLevel) {
-    return 0.0;
-  }
-
-  float u = dot(r, up);
+  float t = uTime * 5.;
 
   vec2 p = r.xz * (CAM_DEPTH / r.y) * 3.;
-  float t = uTime * 5.;
 
   float bump = sin(p.x * 2. + t + sin(p.y * .73 + t));
   bump += sin(p.x * 1.43 + t) * .5;
@@ -64,6 +59,7 @@ float waterSurface(vec3 r) {
   bump += sin(p.y * .81 - t + sin(p.x * .334 - t * .34));
   bump += sin(p.y * .63 - t) * .5;
 
+  float u = dot(r, up);
   bump *= u * smoothstep(9., 1., u);
   bump *= smoothstep(.5, 1., u) * .05;
 
@@ -73,6 +69,10 @@ float waterSurface(vec3 r) {
 }
 
 vec4 background(vec3 r) {
+  if (distFromSurface == 1.0) {
+    return vec4(1., 1., 1., 1);
+  }
+
   float x = atan(r.x, r.z);
   float y = PI * 0.5 - acos(r.y);
 
@@ -115,7 +115,25 @@ void mainImage(const in vec4 inputC, const in vec2 uv, out vec4 outputC) {
 
   // outputC = vec4(distFromSurface, distFromSurface, distFromSurface, 1);
 
-  vec4 bg = background(cam.ray.d) + waterSurface(cam.ray.d);
-  float darkness = mix(0., 0.2, distFromSurface);
+  // float waves;
+  // if (clampedDepth == 1.0) {
+  //   waves = waterSurface(cam.ray.d) * 1.2;
+  // } else {
+  //   waves = 0.0;
+  // }
+  // vec4 bg = background(cam.ray.d) + waves;
+
+  vec4 bg = background(cam.ray.d);
+
+  float darkness = mix(0., mix(0.3, 0., clampedDepth), distFromSurface);
+
   outputC = mix(inputC - darkness, bg, clampedDepth);
+
+  if (clampedDepth == 1. && distFromSurface > 0.6) {
+    outputC = outputC + waterSurface(cam.ray.d) * 1.2;
+  }
+
+  if (distFromSurface >= 1.) {
+    outputC = inputC;
+  }
 }

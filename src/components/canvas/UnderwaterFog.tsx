@@ -2,11 +2,12 @@ import { useThree } from '@react-three/fiber'
 import fragmentShader from '@shaders/sampleDepthBuffer.frag'
 import { Effect, EffectAttribute } from 'postprocessing'
 import { useMemo } from 'react'
-import { Camera, Uniform, Vector2, Vector3, WebGLRenderer } from 'three'
+import { PerspectiveCamera, Uniform, Vector2, Vector3, WebGLRenderer } from 'three'
+import { farOverwater, farUnderwater, surfaceLevel } from './Scene'
 
 class UnderwaterFogEffectImpl extends Effect {
-  public camera: Camera
-  constructor(camera: Camera) {
+  public camera: PerspectiveCamera
+  constructor(camera: PerspectiveCamera) {
     super('UnderwaterFogEffect', fragmentShader, {
       attributes: EffectAttribute.DEPTH,
       uniforms: new Map([
@@ -22,7 +23,16 @@ class UnderwaterFogEffectImpl extends Effect {
     this.uniforms.get('uTime').value += deltaTime
     this.uniforms.get('cameraPos').value = this.camera.position
 
-    console.log(this.uniforms.get('cameraPos').value)
+    // console.log(this.uniforms.get('cameraPos').value)
+
+    if (this.camera.position.y > surfaceLevel && this.camera.far === farUnderwater) {
+      console.log('over surface level')
+      this.camera.far = farOverwater
+      this.camera.updateProjectionMatrix()
+    } else if (this.camera.position.y < surfaceLevel && this.camera.far === farOverwater) {
+      this.camera.far = farUnderwater
+      this.camera.updateProjectionMatrix()
+    }
 
     let lookAtVector = new Vector3(0, 0, -1)
     lookAtVector.applyQuaternion(this.camera.quaternion)
@@ -32,6 +42,6 @@ class UnderwaterFogEffectImpl extends Effect {
 
 export const UnderwaterFogEffect = () => {
   const { camera } = useThree()
-  const effect = useMemo(() => new UnderwaterFogEffectImpl(camera), [camera])
+  const effect = useMemo(() => new UnderwaterFogEffectImpl(camera as PerspectiveCamera), [camera])
   return <primitive object={effect} />
 }

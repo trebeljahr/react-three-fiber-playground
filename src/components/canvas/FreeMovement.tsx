@@ -13,6 +13,7 @@ import { Color, FogExp2 } from 'three'
 import { Ocean } from './Ocean'
 import { Sky as SkyImpl } from 'three-stdlib'
 import { FBOParticles } from './FBOExperiments/Particles'
+import { farOverwater } from './Scene'
 
 // color palette underwater
 // #daf8e3
@@ -58,7 +59,7 @@ export default function FreeMovement() {
 
   return (
     <>
-      <Environment near={1} far={1000} resolution={256} files='/skybox.hdr' />
+      <Environment near={1} far={farOverwater} resolution={256} files='/skybox.hdr' />
       <Physics>
         {/* <MinecraftCreativeControlsPlayer /> */}
         <SwimmingPlayerControls />
@@ -66,12 +67,12 @@ export default function FreeMovement() {
       <Perf />
 
       {/* <fogExp2 ref={fogRef} attach='fog' color='#0086ad' density={0.02} /> */}
-      <color ref={colorRef} attach='background' args={['#00332E']} />
       <Terrain />
+
       <Ocean position={[0, waterHeight, 0]} />
 
       {underwater ? (
-        <></>
+        <color ref={colorRef} attach='background' args={['#00332E']} />
       ) : (
         <>
           <Sky ref={skyRef} azimuth={1} inclination={0.6} distance={2000} />
