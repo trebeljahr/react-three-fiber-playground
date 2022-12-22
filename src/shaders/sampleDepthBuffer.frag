@@ -104,13 +104,39 @@ vec4 background(vec3 r) {
   return vec4(col.xyz, 1);
 }
 
+vec3 BgCol(vec3 rd) {
+  float t, gd, b;
+  t = 4. * uTime;
+  b = dot(vec2(atan(rd.x, rd.z), 0.5 * PI - acos(rd.y)), vec2(2., sin(rd.x)));
+  gd = (clamp(sin(5. * b + t), 0., 1.) * clamp(sin(3.5 * b - t), 0., 1.) +
+        clamp(sin(21. * b - t), 0., 1.) * clamp(sin(17. * b + t), 0., 1.)) *
+       (1. - smoothstep(0.4, 0.6, rd.y));
+  return 0.8 * vec3(0.2, 0.7, 1.) * (0.24 + 0.44 * (rd.y + 1.) * (rd.y + 1.)) *
+         (1. + 0.06 * gd);
+}
+
+float WatShd(vec3 rd) {
+  vec2 p;
+  float t, h;
+  p = 10. * rd.xz / rd.y;
+  t = uTime * 2.;
+  h = sin(p.x * 2. + t * 0.77 + sin(p.y * 0.73 - t)) +
+      sin(p.y * 0.81 - t * 0.89 + sin(p.x * 0.33 + t * 0.34)) +
+      (sin(p.x * 1.43 - t) + sin(p.y * 0.63 + t)) * 0.5;
+  h *= smoothstep(0.5, 1., rd.y) * 1.;
+  return h;
+}
+
 void mainImage(const in vec4 inputC, const in vec2 uv, out vec4 outputC) {
   clampedPos = clamp(cameraPos.y, 0.0, surfaceLevel);
   distFromSurface = remap(clampedPos, 0.0, surfaceLevel, 0.0, 1.0);
 
-  cameraSetup(uv, cameraPos,
+  vec2 waveUv =
+      uv + 2. * sin(2. * PI * (5. * uv + 0.5 * sin(0.4 * PI * uTime)));
+
+  cameraSetup(waveUv, cameraPos,
               vec3(-cameraLookAt.x, cameraLookAt.y, cameraLookAt.z));
-  float depth = texture(depthBuffer, uv).x;
+  float depth = texture(depthBuffer, waveUv).x;
   float clampedDepth = clamp(depth, 0.0, 1.0);
 
   // outputC = vec4(distFromSurface, distFromSurface, distFromSurface, 1);
@@ -123,14 +149,18 @@ void mainImage(const in vec4 inputC, const in vec2 uv, out vec4 outputC) {
   // }
   // vec4 bg = background(cam.ray.d) + waves;
 
-  vec4 bg = background(cam.ray.d);
+  vec4 bg = vec4(BgCol(cam.ray.d), 1.);
+  // vec4 bg = background(cam.ray.d);
 
-  float darkness = mix(0., mix(0.3, 0., clampedDepth), distFromSurface);
+  // if (clampedDepth == 1. && distFromSurface > 0.6) {
+  //   outputC = outputC + waterSurface(cam.ray.d) * 1.2;
+  // }
 
-  outputC = mix(inputC - darkness, bg, clampedDepth);
-
-  if (clampedDepth == 1. && distFromSurface > 0.6) {
-    outputC = outputC + waterSurface(cam.ray.d) * 1.2;
+  if (clampedDepth == 1.) {
+    outputC = bg + WatShd(cam.ray.d);
+  } else {
+    float darkness = mix(0., mix(0.3, 0., clampedDepth), distFromSurface);
+    outputC = mix(inputC - darkness, bg, clampedDepth);
   }
 
   if (distFromSurface >= 1.) {
