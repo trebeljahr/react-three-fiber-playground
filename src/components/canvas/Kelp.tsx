@@ -142,8 +142,6 @@ export function KelpForest({ size = 150 }) {
 }
 
 export const SingleKelpTile = memo<{ offset?: Vector2 }>(function SingleKelpTile({ offset = new Vector2(0, 0) }) {
-  console.log('Rendering... again!')
-
   const ref = useRef<InstancedMesh<BufferGeometry, ShaderMaterial>>()
 
   const result = useKelp()

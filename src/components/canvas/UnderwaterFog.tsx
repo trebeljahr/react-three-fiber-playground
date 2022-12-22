@@ -10,18 +10,19 @@ class UnderwaterFogEffectImpl extends Effect {
     super('UnderwaterFogEffect', fragmentShader, {
       attributes: EffectAttribute.DEPTH,
       uniforms: new Map([
-        ['cameraPosition', new Uniform(new Vector3(0, 0, 0))],
+        ['cameraPos', new Uniform(new Vector3(0, 0, 0))],
         ['cameraLookAt', new Uniform(new Vector3(1, 0, 1))],
         ['uTime', new Uniform(0.0)],
       ]),
     })
-    console.log(camera)
     this.camera = camera
   }
 
   update(renderer: WebGLRenderer, inputBuffer: WebGLBuffer, deltaTime: number) {
     this.uniforms.get('uTime').value += deltaTime
-    this.uniforms.get('cameraPosition').value = this.camera.position
+    this.uniforms.get('cameraPos').value = this.camera.position
+
+    console.log(this.uniforms.get('cameraPos').value)
 
     let lookAtVector = new Vector3(0, 0, -1)
     lookAtVector.applyQuaternion(this.camera.quaternion)
