@@ -8,12 +8,13 @@ import { Terrain } from './Terrain'
 import { DepthBufferEffect } from './DepthBuffer'
 import { Effects } from './Effects'
 import { useFrame, useThree } from '@react-three/fiber'
-import { useRef, useState } from 'react'
+import { createContext, PropsWithChildren, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { Color, FogExp2 } from 'three'
 import { Ocean } from './Ocean'
 import { Sky as SkyImpl } from 'three-stdlib'
 import { FBOParticles } from './FBOExperiments/Particles'
 import { farOverwater } from './Scene'
+import { useUnderwaterContext, waterHeight } from '@components/UnderwaterContext'
 
 // color palette underwater
 // #daf8e3
@@ -22,44 +23,32 @@ import { farOverwater } from './Scene'
 // #0086ad
 // #005582
 
-const waterHeight = 100
-
 export default function FreeMovement() {
-  const { camera, scene } = useThree()
+  const { scene } = useThree()
   // const fogRef = useRef<FogExp2>()
   const colorRef = useRef<Color>()
   const skyRef = useRef<SkyImpl>()
+  const { underwater, onSubmerge, onSurfacing } = useUnderwaterContext()
 
-  const [underwater, setUnderwater] = useState(true)
-
-  useFrame(() => {
-    if (camera.position.y > waterHeight) {
-      if (underwater) {
-        //fogRef.current.color.equals(new Color('#0086ad'))) {
-        setUnderwater(false)
-        console.log('Transition out of water!!!')
-
-        // fogRef.current.density = 0.000001
-        // fogRef.current.density = 0.000001
-        // fogRef.current.color = new Color('white')
-        scene.background = new Color('white')
-      }
-    } else {
-      if (!underwater) {
-        //fogRef.current.color.equals(new Color('white'))) {
-        setUnderwater(true)
-
-        // fogRef.current.density = 0.02
-        // fogRef.current.density = 0.02
-        // fogRef.current.color = new Color('#0086ad')
-        scene.background = new Color('#0086ad')
-      }
-    }
-  })
+  useEffect(() => {
+    onSurfacing(() => {
+      // fogRef.current.density = 0.000001
+      // fogRef.current.density = 0.000001
+      // fogRef.current.color = new Color('white')
+      scene.background = new Color('white')
+    })
+    onSubmerge(() => {
+      // fogRef.current.density = 0.02
+      // fogRef.current.density = 0.02
+      // fogRef.current.color = new Color('#0086ad')
+      scene.background = new Color('#0086ad')
+    })
+  }, [onSubmerge, onSurfacing, scene])
 
   return (
     <>
       <Environment near={1} far={farOverwater} resolution={256} files='/skybox.hdr' />
+      {/* <UI /> */}
       <Physics>
         {/* <MinecraftCreativeControlsPlayer /> */}
         <SwimmingPlayerControls />

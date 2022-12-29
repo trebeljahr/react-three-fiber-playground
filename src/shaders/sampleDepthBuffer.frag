@@ -131,12 +131,11 @@ void mainImage(const in vec4 inputC, const in vec2 uv, out vec4 outputC) {
   clampedPos = clamp(cameraPos.y, 0.0, surfaceLevel);
   distFromSurface = remap(clampedPos, 0.0, surfaceLevel, 0.0, 1.0);
 
-  vec2 waveUv =
-      uv + 2. * sin(2. * PI * (5. * uv + 0.5 * sin(0.4 * PI * uTime)));
+  // vec3 invertedCamera = vec3(-cameraLookAt.x, cameraLookAt.y,
+  // cameraLookAt.z);
+  cameraSetup(uv, cameraPos, cameraLookAt);
 
-  cameraSetup(waveUv, cameraPos,
-              vec3(-cameraLookAt.x, cameraLookAt.y, cameraLookAt.z));
-  float depth = texture(depthBuffer, waveUv).x;
+  float depth = texture(depthBuffer, uv).x;
   float clampedDepth = clamp(depth, 0.0, 1.0);
 
   // outputC = vec4(distFromSurface, distFromSurface, distFromSurface, 1);
