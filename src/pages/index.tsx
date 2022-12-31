@@ -1,10 +1,17 @@
-import { UnderwaterContextProvider } from '@components/UnderwaterContext'
+import { UnderwaterContextProvider } from '@hooks/UnderwaterContext'
 import dynamic from 'next/dynamic'
+import tunnel from 'tunnel-rat'
 
 const FreeMovement = dynamic(() => import('@components/canvas/FreeMovement'), { ssr: false })
 
+export const { In, Out } = tunnel()
+
 export default function Page() {
-  return <></>
+  return (
+    <>
+      <Out />
+    </>
+  )
 }
 
 Page.canvas = () => (

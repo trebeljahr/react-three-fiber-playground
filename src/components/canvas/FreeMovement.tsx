@@ -14,7 +14,8 @@ import { Ocean } from './Ocean'
 import { Sky as SkyImpl } from 'three-stdlib'
 import { FBOParticles } from './FBOExperiments/Particles'
 import { farOverwater } from './Scene'
-import { useUnderwaterContext, waterHeight } from '@components/UnderwaterContext'
+import { useUnderwaterContext, waterHeight } from '@hooks/UnderwaterContext'
+import { UI } from './UI'
 
 // color palette underwater
 // #daf8e3
@@ -28,27 +29,26 @@ export default function FreeMovement() {
   // const fogRef = useRef<FogExp2>()
   const colorRef = useRef<Color>()
   const skyRef = useRef<SkyImpl>()
-  const { underwater, onSubmerge, onSurfacing } = useUnderwaterContext()
+  const { underwater } = useUnderwaterContext()
 
   useEffect(() => {
-    onSurfacing(() => {
+    if (!underwater) {
       // fogRef.current.density = 0.000001
       // fogRef.current.density = 0.000001
       // fogRef.current.color = new Color('white')
       scene.background = new Color('white')
-    })
-    onSubmerge(() => {
+    } else {
       // fogRef.current.density = 0.02
       // fogRef.current.density = 0.02
       // fogRef.current.color = new Color('#0086ad')
       scene.background = new Color('#0086ad')
-    })
-  }, [onSubmerge, onSurfacing, scene])
+    }
+  }, [underwater, scene])
 
   return (
     <>
       <Environment near={1} far={farOverwater} resolution={256} files='/skybox.hdr' />
-      {/* <UI /> */}
+      <UI />
       <Physics>
         {/* <MinecraftCreativeControlsPlayer /> */}
         <SwimmingPlayerControls />
@@ -75,6 +75,7 @@ export default function FreeMovement() {
       {/* <SingleKelp /> */}
       {/* <SingleKelpTile /> */}
       {/* <DepthBufferEffect /> */}
+
       <Effects />
     </>
   )
