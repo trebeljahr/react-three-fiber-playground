@@ -1,5 +1,6 @@
 import { useUnderwaterContext } from '@hooks/UnderwaterContext'
 import { In } from '@pages'
+import { Html, ScreenSpace } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { MeshBasicMaterial } from 'three'
@@ -52,10 +53,15 @@ export function OxygenBar() {
   }, [underwater])
 
   return (
-    <In>
-      <div className='absolute top-0 left-0 z-30'>Oxygen: {oxygenAmount}</div>
-      <div className='absolute left-0 z-30 top-10'>Depth: {100 - camera.position.y}</div>
-    </In>
+    <>
+      <ScreenSpace depth={1}>
+        <Html center sprite>
+          <div className='absolute top-0 left-0 z-30'>Oxygen: {oxygenAmount}</div>
+          <div className='absolute left-0 z-30 top-10'>Depth: {100 - camera.position.y}</div>
+        </Html>
+      </ScreenSpace>
+      {/* <In></In> */}
+    </>
   )
   // useEffect(() => {
   //   if (materialRef.current) {
