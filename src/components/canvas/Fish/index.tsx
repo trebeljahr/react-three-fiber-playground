@@ -243,10 +243,11 @@ export function Fishs() {
   const customFishGeometry = useMemo(() => {
     const fishGeo = nodes.Fish_1.geometry
     const allFishes = new BufferGeometry()
+
     const totalVertices = fishGeo.getAttribute('position').count * 3 * FISH_AMOUNT
 
-    const vertices = [],
-      reference = []
+    const vertices = []
+    const reference = []
 
     for (let i = 0; i < totalVertices; i++) {
       const bIndex = i % (fishGeo.getAttribute('position').count * 3)
@@ -255,17 +256,20 @@ export function Fishs() {
 
     let r = Math.random()
     for (let i = 0; i < fishGeo.getAttribute('position').count * FISH_AMOUNT; i++) {
-      const bIndex = i % fishGeo.getAttribute('position').count
-      const bird = Math.floor(i / fishGeo.getAttribute('position').count)
-      if (bIndex == 0) r = Math.random()
-      const j = ~~bird
+      const fishIndex = i % fishGeo.getAttribute('position').count
+      const fish = Math.floor(i / fishGeo.getAttribute('position').count)
+      if (fishIndex == 0) r = Math.random()
+      const j = ~~fish
       const x = (j % WIDTH) / WIDTH
       const y = ~~(j / WIDTH) / WIDTH
       reference.push(x, y)
     }
 
     allFishes.setAttribute('position', new BufferAttribute(new Float32Array(vertices), 3))
-    allFishes.setAttribute('reference', new BufferAttribute(new Float32Array(reference), 4))
+    allFishes.setAttribute('reference', new BufferAttribute(new Float32Array(reference), 2))
+
+    console.log(allFishes)
+    allFishes.scale(200, 200, 200)
 
     return allFishes
   }, [nodes.Fish_1.geometry])
