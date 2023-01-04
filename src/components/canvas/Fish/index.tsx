@@ -7,8 +7,12 @@ import {
   Color,
   DataTexture,
   DoubleSide,
+  DynamicDrawUsage,
+  InstancedMesh,
   IUniform,
   Mesh,
+  MeshPhysicalMaterial,
+  Object3D,
   RepeatWrapping,
   ShaderMaterial,
   Vector3,
@@ -18,8 +22,12 @@ import positionShader from './position.frag'
 import velocityShader from './velocity.frag'
 import fishVertex from './fish.vert'
 import fishFragment from './fish.frag'
+import { useFish1 } from '@models/fish_pack/Fish1'
+import CustomShaderMaterial from 'three-custom-shader-material'
+import CustomShaderMaterialType from 'three-custom-shader-material/vanilla'
+import { randFloat } from 'three/src/math/MathUtils'
 
-const WIDTH = 100
+const WIDTH = 10
 const BOUNDS = 800
 const BOUNDS_HALF = BOUNDS / 2
 const FISH_AMOUNT = WIDTH * WIDTH
@@ -211,11 +219,59 @@ export function Fishs() {
     ).texture
   })
 
-  const fishMesh = useRef<Mesh<FishGeometry, ShaderMaterial>>()
+  const fishMesh = useRef<Mesh<BufferGeometry, ShaderMaterial>>()
   const fishMaterial = useRef<ShaderMaterial>()
 
+  const { nodes, materials } = useFish1()
+
+  // useEffect(() => {
+  //   const temp = new Object3D()
+
+  //   for (let i = 0; i < FISH_AMOUNT; i++) {
+  //     temp.position.set(0, 0, 0)
+  //     temp.rotation.set(0, 0, 0)
+  //     temp.scale.set(10, 10, 10)
+  //     temp.updateMatrix()
+
+  //     fishMesh.current.setMatrixAt(i, temp.matrix)
+  //   }
+
+  //   fishMesh.current.instanceMatrix.setUsage(DynamicDrawUsage)
+  //   fishMesh.current.instanceMatrix.needsUpdate = true
+  // }, [])
+
+  const customFishGeometry = useMemo(() => {
+    const fishGeo = nodes.Fish_1.geometry
+    const allFishes = new BufferGeometry()
+    const totalVertices = fishGeo.getAttribute('position').count * 3 * FISH_AMOUNT
+
+    const vertices = [],
+      reference = []
+
+    for (let i = 0; i < totalVertices; i++) {
+      const bIndex = i % (fishGeo.getAttribute('position').count * 3)
+      vertices.push(fishGeo.getAttribute('position').array[bIndex])
+    }
+
+    let r = Math.random()
+    for (let i = 0; i < fishGeo.getAttribute('position').count * FISH_AMOUNT; i++) {
+      const bIndex = i % fishGeo.getAttribute('position').count
+      const bird = Math.floor(i / fishGeo.getAttribute('position').count)
+      if (bIndex == 0) r = Math.random()
+      const j = ~~bird
+      const x = (j % WIDTH) / WIDTH
+      const y = ~~(j / WIDTH) / WIDTH
+      reference.push(x, y)
+    }
+
+    allFishes.setAttribute('position', new BufferAttribute(new Float32Array(vertices), 3))
+    allFishes.setAttribute('reference', new BufferAttribute(new Float32Array(reference), 4))
+
+    return allFishes
+  }, [nodes.Fish_1.geometry])
+
   return (
-    <mesh ref={fishMesh}>
+    <mesh ref={fishMesh} geometry={customFishGeometry}>
       <shaderMaterial
         ref={fishMaterial}
         uniforms={fishUniforms.current}
@@ -223,10 +279,18 @@ export function Fishs() {
         fragmentShader={fishFragment}
         side={DoubleSide}
       />
-      <fishGeometry />
     </mesh>
   )
 }
+
+// function FishInstanceGeometry() {
+//   const { nodes, materials } = useFish1()
+//   return (
+//     <instancedMesh>
+//       <fishDisplacementMaterial></fishDisplacementMaterial>
+//     </instancedMesh>
+//   )
+// }
 
 class FishGeometry extends BufferGeometry {
   constructor() {

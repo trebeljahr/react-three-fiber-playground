@@ -1,4 +1,3 @@
-
 attribute vec2 reference;
 
 uniform sampler2D texturePosition;

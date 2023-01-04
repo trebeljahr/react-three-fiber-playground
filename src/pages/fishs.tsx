@@ -7,6 +7,7 @@ export default function Page() {
   return (
     <Canvas camera={{ position: [0, 0, 350], near: 1, far: 3000 }}>
       <OrbitControls />
+      <ambientLight />
       <Fishs />
       <fog color={0xffffff} near={100} far={1000} />
       <Perf />
