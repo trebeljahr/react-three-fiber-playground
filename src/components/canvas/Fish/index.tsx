@@ -26,6 +26,7 @@ import { useFish1 } from '@models/fish_pack/Fish1'
 import CustomShaderMaterial from 'three-custom-shader-material'
 import CustomShaderMaterialType from 'three-custom-shader-material/vanilla'
 import { randFloat } from 'three/src/math/MathUtils'
+import { useState } from 'react'
 
 const WIDTH = 10
 const BOUNDS = 800
@@ -172,14 +173,25 @@ export function Fishs() {
       mouseY.current = event.clientY - windowHalfY
     }
 
+    function onKeyPress(event: KeyboardEvent) {
+      if (event.key === ' ') {
+        console.log('Space!')
+        setPaused((paused) => !paused)
+      }
+    }
+
     document.addEventListener('pointermove', onPointerMove)
+    document.addEventListener('keypress', onKeyPress)
 
     return () => {
       document.removeEventListener('pointermove', onPointerMove)
+      document.removeEventListener('keypress', onKeyPress)
     }
   }, [windowHalfX, windowHalfY])
 
   const last = useRef(performance.now())
+
+  const [paused, setPaused] = useState(false)
 
   useFrame(() => {
     // const delta = clock.getDelta()
@@ -190,6 +202,8 @@ export function Fishs() {
 
     if (delta > 1) delta = 1 // safety cap on large deltas
     last.current = now
+
+    if (paused) return
 
     positionUniforms.current['time'].value = now
     positionUniforms.current['delta'].value = delta
@@ -222,7 +236,7 @@ export function Fishs() {
   const fishMesh = useRef<Mesh<BufferGeometry, ShaderMaterial>>()
   const fishMaterial = useRef<ShaderMaterial>()
 
-  const { nodes, materials } = useFish1()
+  const { nodes } = useFish1()
 
   const customFishGeometry = useMemo(() => {
     const fishGeo = nodes.Fish_1.geometry
@@ -234,10 +248,11 @@ export function Fishs() {
 
     const vertices = []
     const reference = []
+    const indices = []
 
     for (let i = 0; i < totalVertices; i++) {
-      const bIndex = i % (fishGeo.getAttribute('position').count * 3)
-      vertices.push(fishGeo.getAttribute('position').array[bIndex])
+      const fishIndex = i % (fishGeo.getAttribute('position').count * 3)
+      vertices.push(fishGeo.getAttribute('position').array[fishIndex])
     }
 
     let r = Math.random()
@@ -251,11 +266,19 @@ export function Fishs() {
       reference.push(x, y)
     }
 
+    for (let i = 0; i < fishGeo.index.array.length * FISH_AMOUNT; i++) {
+      const offset = Math.floor(i / fishGeo.index.array.length) * fishGeo.getAttribute('position').count
+      indices.push(fishGeo.index.array[i % fishGeo.index.array.length] + offset)
+    }
+
     allFishes.setAttribute('position', new BufferAttribute(new Float32Array(vertices), 3))
     allFishes.setAttribute('reference', new BufferAttribute(new Float32Array(reference), 2))
 
+    allFishes.setIndex(indices)
+
     console.log(allFishes)
-    allFishes.scale(300, 300, 300)
+    const scale = 700
+    allFishes.scale(scale, scale, scale)
 
     return allFishes
   }, [nodes.Fish_1.geometry])
