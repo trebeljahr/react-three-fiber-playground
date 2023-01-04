@@ -62,16 +62,15 @@ void main() {
   dist = length(dir);
   distSquared = dist * dist;
 
-  // float preyRadius = 150.0;
-  // float preyRadiusSq = preyRadius * preyRadius;
+  float preyRadius = 150.0;
+  float preyRadiusSq = preyRadius * preyRadius;
 
   // move birds away from predator
-  // if (dist < preyRadius) {
-
-  //   f = (distSquared / preyRadiusSq - 1.0) * delta * 100.;
-  //   velocity += normalize(dir) * f;
-  //   limit += 5.0;
-  // }
+  if (dist < preyRadius) {
+    f = (distSquared / preyRadiusSq - 1.0) * delta * 100.;
+    velocity += normalize(dir) * f;
+    limit += 5.0;
+  }
 
   // if (testing == 0.0) {}
   // if ( rand( uv + time ) < freedomFactor ) {}

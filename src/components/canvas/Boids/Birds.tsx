@@ -149,6 +149,28 @@ export function Birds() {
     return () => gpuCompute && gpuCompute.dispose()
   }, [gpuCompute])
 
+  const mouseX = useRef(10000)
+  const mouseY = useRef(10000)
+
+  const { width, height } = useThree((state) => state.size)
+  const windowHalfX = useMemo(() => width / 2, [width])
+  const windowHalfY = useMemo(() => height / 2, [height])
+
+  useEffect(() => {
+    function onPointerMove(event: PointerEvent) {
+      if (event.isPrimary === false) return
+
+      mouseX.current = event.clientX - windowHalfX
+      mouseY.current = event.clientY - windowHalfY
+    }
+
+    document.addEventListener('pointermove', onPointerMove)
+
+    return () => {
+      document.removeEventListener('pointermove', onPointerMove)
+    }
+  }, [windowHalfX, windowHalfY])
+
   const last = useRef(performance.now())
 
   useFrame(() => {
@@ -168,9 +190,13 @@ export function Birds() {
     birdUniforms.current['time'].value = now
     birdUniforms.current['delta'].value = delta
 
-    // velocityUniforms.current['predator'].value.set((0.5 * mouseX) / windowHalfX, (-0.5 * mouseY) / windowHalfY, 0)
-    // mouseX = 10000
-    // mouseY = 10000
+    velocityUniforms.current['predator'].value.set(
+      (0.5 * mouseX.current) / windowHalfX,
+      (-0.5 * mouseY.current) / windowHalfY,
+      0,
+    )
+    mouseX.current = 10000
+    mouseY.current = 10000
 
     gpuCompute.compute()
 
