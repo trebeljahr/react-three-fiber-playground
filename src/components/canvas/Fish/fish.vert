@@ -29,5 +29,5 @@ void main() {
   newPosition = maty * matz * newPosition;
   newPosition += pos;
 
-  gl_Position = projectionMatrix * viewMatrix * vec4(newPosition, 1.0);
+  csm_Position = newPosition;
 }

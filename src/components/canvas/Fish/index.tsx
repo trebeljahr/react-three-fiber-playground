@@ -64,7 +64,7 @@ function fillVelocityTexture(texture: DataTexture) {
   }
 }
 
-type Uniforms = { [uniform: string]: IUniform<any> }
+type Uniforms = { [key: string]: IUniform<any> }
 
 export function Fishs() {
   const { gl } = useThree()
@@ -84,13 +84,16 @@ export function Fishs() {
   const positionVariable = useRef<Variable>()
   const positionUniforms = useRef<Uniforms>()
   const velocityUniforms = useRef<Uniforms>()
-  const fishUniforms = useRef<Uniforms>({
-    color: { value: new Color(0xff2200) },
-    texturePosition: { value: null },
-    textureVelocity: { value: null },
-    time: { value: 1.0 },
-    delta: { value: 0.0 },
-  })
+  const fishUniforms = useMemo<Uniforms>(
+    () => ({
+      color: { value: new Color(0xff2200) },
+      texturePosition: { value: null },
+      textureVelocity: { value: null },
+      time: { value: 1.0 },
+      delta: { value: 0.0 },
+    }),
+    [],
+  )
 
   useEffect(() => {
     function initComputeRenderer() {
@@ -141,13 +144,13 @@ export function Fishs() {
     initComputeRenderer()
 
     function initFishs() {
-      fishUniforms.current = {
-        color: { value: new Color(0xff2200) },
-        texturePosition: { value: null },
-        textureVelocity: { value: null },
-        time: { value: 1.0 },
-        delta: { value: 0.0 },
-      }
+      // fishUniforms.current = {
+      //   color: { value: new Color(0xff2200) },
+      //   texturePosition: { value: null },
+      //   textureVelocity: { value: null },
+      //   time: { value: 1.0 },
+      //   delta: { value: 0.0 },
+      // }
 
       fishMesh.current.rotation.y = Math.PI / 2
       fishMesh.current.matrixAutoUpdate = false
@@ -210,8 +213,8 @@ export function Fishs() {
     positionUniforms.current['delta'].value = delta
     velocityUniforms.current['time'].value = now
     velocityUniforms.current['delta'].value = delta
-    fishUniforms.current['time'].value = now
-    fishUniforms.current['delta'].value = delta
+    fishMaterial.current.uniforms['time'].value = now
+    fishMaterial.current.uniforms['delta'].value = delta
 
     velocityUniforms.current['predator'].value.set(
       (0.5 * mouseX.current) / windowHalfX,
@@ -235,7 +238,7 @@ export function Fishs() {
   })
 
   const fishMesh = useRef<Mesh<BufferGeometry, ShaderMaterial>>()
-  const fishMaterial = useRef<ShaderMaterial>()
+  const fishMaterial = useRef<CustomShaderMaterialType>()
 
   const { nodes } = useFish1()
 
@@ -287,12 +290,21 @@ export function Fishs() {
 
   return (
     <mesh ref={fishMesh} geometry={customFishGeometry}>
-      <shaderMaterial
+      {/* <shaderMaterial
         ref={fishMaterial}
         uniforms={fishUniforms.current}
         vertexShader={fishVertex}
         fragmentShader={fishFragment}
         side={DoubleSide}
+      /> */}
+      <CustomShaderMaterial
+        ref={fishMaterial}
+        baseMaterial={MeshPhysicalMaterial}
+        vertexShader={fishVertex}
+        fragmentShader={fishFragment}
+        uniforms={fishUniforms}
+        flatShading
+        color={'#4CBB17'}
       />
     </mesh>
   )
