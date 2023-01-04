@@ -1,11 +1,17 @@
 import { useRef, useMemo } from 'react'
-import { extend, useThree, useLoader, useFrame } from '@react-three/fiber'
+import { extend, useThree, useLoader, useFrame, Object3DNode } from '@react-three/fiber'
 import { Water } from 'three-stdlib'
 import { PlaneGeometry, RepeatWrapping, TextureLoader, Vector3 } from 'three'
 
 extend({ Water })
 
-export function Ocean({ position = [0, 0, 0] }) {
+declare module '@react-three/fiber' {
+  interface ThreeElements {
+    water: Object3DNode<Water, typeof Water>
+  }
+}
+
+export function Ocean({ position = [0, 0, 0] as [number, number, number] }) {
   const ref = useRef<Water>()
   const gl = useThree((state) => state.gl)
   const waterNormals = useLoader(TextureLoader, '/waternormals.jpeg')
@@ -31,6 +37,5 @@ export function Ocean({ position = [0, 0, 0] }) {
     }
   })
 
-  // @ts-ignore: next-line
   return <water ref={ref} args={[geom, config]} rotation-x={-Math.PI / 2} position={position} />
 }

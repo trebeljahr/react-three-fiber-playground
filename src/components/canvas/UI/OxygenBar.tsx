@@ -16,6 +16,7 @@ export function OxygenBar() {
   const { underwater } = useUnderwaterContext()
 
   const { camera } = useThree()
+  let intervalId = useRef<NodeJS.Timer>()
 
   useEffect(() => {
     // function resetOxygen() {
@@ -36,31 +37,48 @@ export function OxygenBar() {
     //     setOxygenAmount((old) => old - 1)
     //   }, 1000)
     // })
-    let intervalId: NodeJS.Timer
+
     if (!underwater) {
-      intervalId && clearInterval(intervalId)
+      intervalId.current && clearInterval(intervalId.current)
       setOxygenAmount(defaultOxygenAmount)
     } else {
-      intervalId && clearInterval(intervalId)
-      intervalId = setInterval(() => {
+      intervalId.current && clearInterval(intervalId.current)
+      intervalId.current = setInterval(() => {
         setOxygenAmount((old) => old - 1)
       }, 1000)
     }
 
     return () => {
-      clearInterval(intervalId)
+      clearInterval(intervalId.current)
     }
   }, [underwater])
 
+  useEffect(() => {
+    if (oxygenAmount <= 0) {
+      console.log('ran out of oxygen')
+      clearInterval(intervalId.current)
+    }
+  }, [oxygenAmount])
+
+  const depthRef = useRef<HTMLDivElement>()
+
+  useFrame(() => {
+    depthRef.current.innerText = `Depth: ${(100 - camera.position.y).toFixed(0)}`
+  })
+
   return (
     <>
-      <ScreenSpace depth={1}>
-        <Html center sprite>
-          <div className='absolute top-0 left-0 z-30'>Oxygen: {oxygenAmount}</div>
-          <div className='absolute left-0 z-30 top-10'>Depth: {100 - camera.position.y}</div>
-        </Html>
-      </ScreenSpace>
-      {/* <In></In> */}
+      {/* <ScreenSpace depth={1}> */}
+      {/* <Html center sprite>
+         
+        </Html> */}
+      {/* </ScreenSpace> */}
+      <In>
+        <div className='absolute top-0 left-0 z-30'>Oxygen: {oxygenAmount}</div>
+        <div ref={depthRef} className='absolute left-0 z-30 top-10'>
+          Depth: {100 - camera.position.y}
+        </div>
+      </In>
     </>
   )
   // useEffect(() => {
