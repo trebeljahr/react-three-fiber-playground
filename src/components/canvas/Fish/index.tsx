@@ -144,14 +144,6 @@ export function Fishs() {
     initComputeRenderer()
 
     function initFishs() {
-      // fishUniforms.current = {
-      //   color: { value: new Color(0xff2200) },
-      //   texturePosition: { value: null },
-      //   textureVelocity: { value: null },
-      //   time: { value: 1.0 },
-      //   delta: { value: 0.0 },
-      // }
-
       fishMesh.current.rotation.y = Math.PI / 2
       fishMesh.current.matrixAutoUpdate = false
       fishMesh.current.updateMatrix()
@@ -177,13 +169,6 @@ export function Fishs() {
       mouseY.current = event.clientY - windowHalfY
     }
 
-    // function onKeyPress(event: KeyboardEvent) {
-    //   if (event.key === ' ') {
-    //     console.log('Space!')
-    //     setPaused((paused) => !paused)
-    //   }
-    // }
-
     document.addEventListener('pointermove', onPointerMove)
 
     return () => {
@@ -193,21 +178,12 @@ export function Fishs() {
 
   const last = useRef(performance.now())
 
-  // const [paused, setPaused] = useState(false)
-
   useFrame(() => {
-    // const delta = clock.getDelta()
-    // const now = clock.getElapsedTime()
-
     const now = performance.now()
     let delta = (now - last.current) / 1000
 
-    if (delta > 1) delta = 1 // safety cap on large deltas
+    if (delta > 1) delta = 1
     last.current = now
-
-    // if (paused) return
-
-    // console.log(now)
 
     positionUniforms.current['time'].value = now
     positionUniforms.current['delta'].value = delta
@@ -227,8 +203,6 @@ export function Fishs() {
     mouseY.current = 10000
 
     gpuCompute.compute()
-
-    // console.log(gpuCompute.getCurrentRenderTarget(positionVariable.current))
 
     fishMaterial.current.uniforms['texturePosition'].value = gpuCompute.getCurrentRenderTarget(
       positionVariable.current,
@@ -292,13 +266,6 @@ export function Fishs() {
 
   return (
     <mesh ref={fishMesh} geometry={customFishGeometry}>
-      {/* <shaderMaterial
-        ref={fishMaterial}
-        uniforms={fishUniforms.current}
-        vertexShader={fishVertex}
-        fragmentShader={fishFragment}
-        side={DoubleSide}
-      /> */}
       <CustomShaderMaterial
         ref={fishMaterial}
         baseMaterial={MeshPhysicalMaterial}
@@ -311,15 +278,6 @@ export function Fishs() {
     </mesh>
   )
 }
-
-// function FishInstanceGeometry() {
-//   const { nodes, materials } = useFish1()
-//   return (
-//     <instancedMesh>
-//       <fishDisplacementMaterial></fishDisplacementMaterial>
-//     </instancedMesh>
-//   )
-// }
 
 class FishGeometry extends BufferGeometry {
   constructor() {

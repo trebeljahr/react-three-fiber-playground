@@ -4,6 +4,8 @@ uniform sampler2D texturePosition;
 uniform sampler2D textureVelocity;
 uniform float time;
 
+varying float z;
+
 void main() {
 
   vec4 tmpPos = texture2D(texturePosition, reference);
@@ -11,7 +13,12 @@ void main() {
   vec3 velocity = normalize(texture2D(textureVelocity, reference).xyz);
 
   vec3 newPosition = position;
-  newPosition.x += sin(time / 1000.0 * 5.) * 0.5 * newPosition.z;
+
+  vec3 test = mat3(modelMatrix) * newPosition;
+
+  z = 0.5 - test.x / 40.;
+
+  newPosition.x += sin(time / 1000.0 * 10. + z * 2.) * 6. * z;
 
   newPosition = mat3(modelMatrix) * newPosition;
 
