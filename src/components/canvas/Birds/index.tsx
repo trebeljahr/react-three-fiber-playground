@@ -19,7 +19,7 @@ import velocityShader from './velocity.frag'
 import birdVertex from './birds.vert'
 import birdFragment from './birds.frag'
 
-const WIDTH = 32
+const WIDTH = 5
 const BOUNDS = 800
 const BOUNDS_HALF = BOUNDS / 2
 const BIRDS = WIDTH * WIDTH

@@ -16,13 +16,13 @@ import {
 import { GPUComputationRenderer, Variable } from 'three/examples/jsm/misc/GPUComputationRenderer'
 import positionShader from './position.frag'
 import velocityShader from './velocity.frag'
-import birdVertex from './birds.vert'
-import birdFragment from './birds.frag'
+import fishVertex from './fish.vert'
+import fishFragment from './fish.frag'
 
-const WIDTH = 32
+const WIDTH = 100
 const BOUNDS = 800
 const BOUNDS_HALF = BOUNDS / 2
-const BIRDS = WIDTH * WIDTH
+const FISH_AMOUNT = WIDTH * WIDTH
 
 function fillPositionTexture(texture: DataTexture) {
   const theArray = texture.image.data
@@ -56,7 +56,7 @@ function fillVelocityTexture(texture: DataTexture) {
 
 type Uniforms = { [uniform: string]: IUniform<any> }
 
-export function Birds() {
+export function Fishs() {
   const { gl } = useThree()
 
   const gpuCompute = useMemo(() => {
@@ -74,7 +74,7 @@ export function Birds() {
   const positionVariable = useRef<Variable>()
   const positionUniforms = useRef<Uniforms>()
   const velocityUniforms = useRef<Uniforms>()
-  const birdUniforms = useRef<Uniforms>({
+  const fishUniforms = useRef<Uniforms>({
     color: { value: new Color(0xff2200) },
     texturePosition: { value: null },
     textureVelocity: { value: null },
@@ -130,8 +130,8 @@ export function Birds() {
 
     initComputeRenderer()
 
-    function initBirds() {
-      birdUniforms.current = {
+    function initFishs() {
+      fishUniforms.current = {
         color: { value: new Color(0xff2200) },
         texturePosition: { value: null },
         textureVelocity: { value: null },
@@ -139,12 +139,12 @@ export function Birds() {
         delta: { value: 0.0 },
       }
 
-      birdMesh.current.rotation.y = Math.PI / 2
-      birdMesh.current.matrixAutoUpdate = false
-      birdMesh.current.updateMatrix()
+      fishMesh.current.rotation.y = Math.PI / 2
+      fishMesh.current.matrixAutoUpdate = false
+      fishMesh.current.updateMatrix()
     }
 
-    initBirds()
+    initFishs()
 
     return () => gpuCompute && gpuCompute.dispose()
   }, [gpuCompute])
@@ -187,8 +187,8 @@ export function Birds() {
     positionUniforms.current['delta'].value = delta
     velocityUniforms.current['time'].value = now
     velocityUniforms.current['delta'].value = delta
-    birdUniforms.current['time'].value = now
-    birdUniforms.current['delta'].value = delta
+    fishUniforms.current['time'].value = now
+    fishUniforms.current['delta'].value = delta
 
     velocityUniforms.current['predator'].value.set(
       (0.5 * mouseX.current) / windowHalfX,
@@ -202,49 +202,49 @@ export function Birds() {
 
     // console.log(gpuCompute.getCurrentRenderTarget(positionVariable.current))
 
-    birdMaterial.current.uniforms['texturePosition'].value = gpuCompute.getCurrentRenderTarget(
+    fishMaterial.current.uniforms['texturePosition'].value = gpuCompute.getCurrentRenderTarget(
       positionVariable.current,
     ).texture
 
-    birdMaterial.current.uniforms['textureVelocity'].value = gpuCompute.getCurrentRenderTarget(
+    fishMaterial.current.uniforms['textureVelocity'].value = gpuCompute.getCurrentRenderTarget(
       velocityVariable.current,
     ).texture
   })
 
-  const birdMesh = useRef<Mesh<BirdGeometry, ShaderMaterial>>()
-  const birdMaterial = useRef<ShaderMaterial>()
+  const fishMesh = useRef<Mesh<FishGeometry, ShaderMaterial>>()
+  const fishMaterial = useRef<ShaderMaterial>()
 
   return (
-    <mesh ref={birdMesh}>
+    <mesh ref={fishMesh}>
       <shaderMaterial
-        ref={birdMaterial}
-        uniforms={birdUniforms.current}
-        vertexShader={birdVertex}
-        fragmentShader={birdFragment}
+        ref={fishMaterial}
+        uniforms={fishUniforms.current}
+        vertexShader={fishVertex}
+        fragmentShader={fishFragment}
         side={DoubleSide}
       />
-      <birdGeometry />
+      <fishGeometry />
     </mesh>
   )
 }
 
-class BirdGeometry extends BufferGeometry {
+class FishGeometry extends BufferGeometry {
   constructor() {
     super()
 
-    const trianglesPerBird = 3
-    const triangles = BIRDS * trianglesPerBird
+    const trianglesPerFish = 3
+    const triangles = FISH_AMOUNT * trianglesPerFish
     const points = triangles * 3
 
     const vertices = new BufferAttribute(new Float32Array(points * 3), 3)
-    const birdColors = new BufferAttribute(new Float32Array(points * 3), 3)
+    const fishColors = new BufferAttribute(new Float32Array(points * 3), 3)
     const references = new BufferAttribute(new Float32Array(points * 2), 2)
-    const birdVertex = new BufferAttribute(new Float32Array(points), 1)
+    const fishVertex = new BufferAttribute(new Float32Array(points), 1)
 
     this.setAttribute('position', vertices)
-    this.setAttribute('birdColor', birdColors)
+    this.setAttribute('fishColor', fishColors)
     this.setAttribute('reference', references)
-    this.setAttribute('birdVertex', birdVertex)
+    this.setAttribute('fishVertex', fishVertex)
 
     let v = 0
 
@@ -256,7 +256,7 @@ class BirdGeometry extends BufferGeometry {
 
     const wingsSpan = 20
 
-    for (let f = 0; f < BIRDS; f++) {
+    for (let f = 0; f < FISH_AMOUNT; f++) {
       verts_push(0, -0, -20, 0, 4, -20, 0, 0, 30)
       verts_push(0, 0, -15, -wingsSpan, 0, 0, 0, 0, 15)
       verts_push(0, 0, 15, wingsSpan, 0, 0, 0, 0, -15)
@@ -264,27 +264,27 @@ class BirdGeometry extends BufferGeometry {
 
     for (let v = 0; v < triangles * 3; v++) {
       const triangleIndex = ~~(v / 3)
-      const birdIndex = ~~(triangleIndex / trianglesPerBird)
-      const x = (birdIndex % WIDTH) / WIDTH
-      const y = ~~(birdIndex / WIDTH) / WIDTH
+      const fishIndex = ~~(triangleIndex / trianglesPerFish)
+      const x = (fishIndex % WIDTH) / WIDTH
+      const y = ~~(fishIndex / WIDTH) / WIDTH
 
-      const c = new Color(0x444444 + (~~(v / 9) / BIRDS) * 0x666666)
-      ;(birdColors.array as number[])[v * 3 + 0] = c.r
-      ;(birdColors.array as number[])[v * 3 + 1] = c.g
-      ;(birdColors.array as number[])[v * 3 + 2] = c.b
+      const c = new Color(0x444444 + (~~(v / 9) / FISH_AMOUNT) * 0x666666)
+      ;(fishColors.array as number[])[v * 3 + 0] = c.r
+      ;(fishColors.array as number[])[v * 3 + 1] = c.g
+      ;(fishColors.array as number[])[v * 3 + 2] = c.b
       ;(references.array as number[])[v * 2] = x
       ;(references.array as number[])[v * 2 + 1] = y
-      ;(birdVertex.array as number[])[v] = v % 9
+      ;(fishVertex.array as number[])[v] = v % 9
     }
 
     this.scale(0.2, 0.2, 0.2)
   }
 }
 
-extend({ BirdGeometry })
+extend({ FishGeometry })
 
 declare module '@react-three/fiber' {
   interface ThreeElements {
-    birdGeometry: Object3DNode<BirdGeometry, typeof BirdGeometry>
+    fishGeometry: Object3DNode<FishGeometry, typeof FishGeometry>
   }
 }
