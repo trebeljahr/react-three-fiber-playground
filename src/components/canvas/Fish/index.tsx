@@ -27,6 +27,7 @@ import CustomShaderMaterial from 'three-custom-shader-material'
 import CustomShaderMaterialType from 'three-custom-shader-material/vanilla'
 import { randFloat } from 'three/src/math/MathUtils'
 import { useState } from 'react'
+import { mergeBufferGeometries } from 'three-stdlib'
 
 const WIDTH = 10
 const BOUNDS = 800
@@ -239,7 +240,8 @@ export function Fishs() {
   const { nodes } = useFish1()
 
   const customFishGeometry = useMemo(() => {
-    const fishGeo = nodes.Fish_1.geometry
+    const merged = mergeBufferGeometries([nodes.Fish_1.geometry, nodes.Fish_2.geometry, nodes.Fish_3.geometry])
+    const fishGeo = merged
     fishGeo.rotateX(-Math.PI / 2)
 
     const allFishes = new BufferGeometry()
@@ -281,7 +283,7 @@ export function Fishs() {
     allFishes.scale(scale, scale, scale)
 
     return allFishes
-  }, [nodes.Fish_1.geometry])
+  }, [nodes])
 
   return (
     <mesh ref={fishMesh} geometry={customFishGeometry}>
