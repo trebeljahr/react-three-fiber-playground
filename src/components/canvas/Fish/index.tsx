@@ -177,25 +177,23 @@ export function Fishs() {
       mouseY.current = event.clientY - windowHalfY
     }
 
-    function onKeyPress(event: KeyboardEvent) {
-      if (event.key === ' ') {
-        console.log('Space!')
-        setPaused((paused) => !paused)
-      }
-    }
+    // function onKeyPress(event: KeyboardEvent) {
+    //   if (event.key === ' ') {
+    //     console.log('Space!')
+    //     setPaused((paused) => !paused)
+    //   }
+    // }
 
     document.addEventListener('pointermove', onPointerMove)
-    document.addEventListener('keypress', onKeyPress)
 
     return () => {
       document.removeEventListener('pointermove', onPointerMove)
-      document.removeEventListener('keypress', onKeyPress)
     }
   }, [windowHalfX, windowHalfY])
 
   const last = useRef(performance.now())
 
-  const [paused, setPaused] = useState(false)
+  // const [paused, setPaused] = useState(false)
 
   useFrame(() => {
     // const delta = clock.getDelta()
@@ -207,12 +205,16 @@ export function Fishs() {
     if (delta > 1) delta = 1 // safety cap on large deltas
     last.current = now
 
-    if (paused) return
+    // if (paused) return
+
+    // console.log(now)
 
     positionUniforms.current['time'].value = now
     positionUniforms.current['delta'].value = delta
+
     velocityUniforms.current['time'].value = now
     velocityUniforms.current['delta'].value = delta
+
     fishMaterial.current.uniforms['time'].value = now
     fishMaterial.current.uniforms['delta'].value = delta
 

@@ -2,6 +2,7 @@ attribute vec2 reference;
 
 uniform sampler2D texturePosition;
 uniform sampler2D textureVelocity;
+uniform float time;
 
 void main() {
 
@@ -10,6 +11,8 @@ void main() {
   vec3 velocity = normalize(texture2D(textureVelocity, reference).xyz);
 
   vec3 newPosition = position;
+  newPosition.x += sin(time / 1000.0 * 5.) * 0.5 * newPosition.z;
+
   newPosition = mat3(modelMatrix) * newPosition;
 
   velocity.z *= -1.;
