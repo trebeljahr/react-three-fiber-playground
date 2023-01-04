@@ -149,9 +149,17 @@ export function Birds() {
     return () => gpuCompute && gpuCompute.dispose()
   }, [gpuCompute])
 
-  useFrame(({ clock }) => {
-    const delta = clock.getDelta()
-    const now = clock.getElapsedTime()
+  const last = useRef(performance.now())
+
+  useFrame(() => {
+    // const delta = clock.getDelta()
+    // const now = clock.getElapsedTime()
+
+    const now = performance.now()
+    let delta = (now - last.current) / 1000
+
+    if (delta > 1) delta = 1 // safety cap on large deltas
+    last.current = now
 
     positionUniforms.current['time'].value = now
     positionUniforms.current['delta'].value = delta
