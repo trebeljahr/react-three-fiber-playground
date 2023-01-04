@@ -224,24 +224,10 @@ export function Fishs() {
 
   const { nodes, materials } = useFish1()
 
-  // useEffect(() => {
-  //   const temp = new Object3D()
-
-  //   for (let i = 0; i < FISH_AMOUNT; i++) {
-  //     temp.position.set(0, 0, 0)
-  //     temp.rotation.set(0, 0, 0)
-  //     temp.scale.set(10, 10, 10)
-  //     temp.updateMatrix()
-
-  //     fishMesh.current.setMatrixAt(i, temp.matrix)
-  //   }
-
-  //   fishMesh.current.instanceMatrix.setUsage(DynamicDrawUsage)
-  //   fishMesh.current.instanceMatrix.needsUpdate = true
-  // }, [])
-
   const customFishGeometry = useMemo(() => {
     const fishGeo = nodes.Fish_1.geometry
+    fishGeo.rotateX(-Math.PI / 2)
+
     const allFishes = new BufferGeometry()
 
     const totalVertices = fishGeo.getAttribute('position').count * 3 * FISH_AMOUNT
@@ -269,7 +255,7 @@ export function Fishs() {
     allFishes.setAttribute('reference', new BufferAttribute(new Float32Array(reference), 2))
 
     console.log(allFishes)
-    allFishes.scale(200, 200, 200)
+    allFishes.scale(300, 300, 300)
 
     return allFishes
   }, [nodes.Fish_1.geometry])
