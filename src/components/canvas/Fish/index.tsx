@@ -210,15 +210,17 @@ export function Fishs() {
 
     // console.log(gpuCompute.getCurrentRenderTarget(positionVariable.current))
 
-    const posTexture = gpuCompute.getCurrentRenderTarget(positionVariable.current).texture
-    fishMaterial.current.uniforms.texturePosition.value = posTexture
+    fishMaterial.current.uniforms['texturePosition'].value = gpuCompute.getCurrentRenderTarget(
+      positionVariable.current,
+    ).texture
 
-    const velTexture = gpuCompute.getCurrentRenderTarget(velocityVariable.current).texture
-    fishMaterial.current.uniforms.textureVelocity.value = velTexture
+    fishMaterial.current.uniforms['textureVelocity'].value = gpuCompute.getCurrentRenderTarget(
+      velocityVariable.current,
+    ).texture
   })
 
   const fishMesh = useRef<Mesh<BufferGeometry, ShaderMaterial>>()
-  const fishMaterial = useRef<CustomShaderMaterialType>()
+  const fishMaterial = useRef<ShaderMaterial>()
 
   const { nodes, materials } = useFish1()
 
@@ -260,21 +262,12 @@ export function Fishs() {
 
   return (
     <mesh ref={fishMesh} geometry={customFishGeometry}>
-      {/* <shaderMaterial
+      <shaderMaterial
         ref={fishMaterial}
         uniforms={fishUniforms.current}
         vertexShader={fishVertex}
         fragmentShader={fishFragment}
         side={DoubleSide}
-      /> */}
-      <CustomShaderMaterial
-        ref={fishMaterial}
-        baseMaterial={MeshPhysicalMaterial}
-        vertexShader={fishVertex}
-        // fragmentShader={fishFragment}
-        uniforms={fishUniforms.current}
-        flatShading
-        color={'#4CBB17'}
       />
     </mesh>
   )
