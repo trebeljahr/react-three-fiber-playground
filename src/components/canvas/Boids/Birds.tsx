@@ -74,7 +74,13 @@ export function Birds() {
   const positionVariable = useRef<Variable>()
   const positionUniforms = useRef<Uniforms>()
   const velocityUniforms = useRef<Uniforms>()
-  const birdUniforms = useRef<Uniforms>()
+  const birdUniforms = useRef<Uniforms>({
+    color: { value: new Color(0xff2200) },
+    texturePosition: { value: null },
+    textureVelocity: { value: null },
+    time: { value: 1.0 },
+    delta: { value: 0.0 },
+  })
 
   useEffect(() => {
     function initComputeRenderer() {
@@ -107,7 +113,7 @@ export function Birds() {
       velocityUniforms.current['alignmentDistance'] = { value: 1.0 }
       velocityUniforms.current['cohesionDistance'] = { value: 1.0 }
       velocityUniforms.current['freedomFactor'] = { value: 1.0 }
-      velocityUniforms.current['predator'] = { value: new Vector3() }
+      velocityUniforms.current['predator'] = { value: new Vector3(1, 1, 1) }
       velocityVariable.current.material.defines.BOUNDS = BOUNDS.toFixed(2)
 
       velocityVariable.current.wrapS = RepeatWrapping
@@ -133,14 +139,14 @@ export function Birds() {
         delta: { value: 0.0 },
       }
 
-      birdRef.current.rotation.y = Math.PI / 2
-      birdRef.current.matrixAutoUpdate = false
-      birdRef.current.updateMatrix()
+      birdMesh.current.rotation.y = Math.PI / 2
+      birdMesh.current.matrixAutoUpdate = false
+      birdMesh.current.updateMatrix()
     }
 
     initBirds()
 
-    return gpuCompute && gpuCompute.dispose()
+    return () => gpuCompute && gpuCompute.dispose()
   }, [gpuCompute])
 
   useFrame(({ clock }) => {
@@ -160,15 +166,24 @@ export function Birds() {
 
     gpuCompute.compute()
 
-    birdUniforms.current['texturePosition'].value = gpuCompute.getCurrentRenderTarget(positionVariable.current).texture
-    birdUniforms.current['textureVelocity'].value = gpuCompute.getCurrentRenderTarget(velocityVariable.current).texture
+    // console.log(gpuCompute.getCurrentRenderTarget(positionVariable.current))
+
+    birdMaterial.current.uniforms['texturePosition'].value = gpuCompute.getCurrentRenderTarget(
+      positionVariable.current,
+    ).texture
+
+    birdMaterial.current.uniforms['textureVelocity'].value = gpuCompute.getCurrentRenderTarget(
+      velocityVariable.current,
+    ).texture
   })
 
-  const birdRef = useRef<Mesh<BirdGeometry, ShaderMaterial>>()
+  const birdMesh = useRef<Mesh<BirdGeometry, ShaderMaterial>>()
+  const birdMaterial = useRef<ShaderMaterial>()
 
   return (
-    <mesh ref={birdRef}>
+    <mesh ref={birdMesh}>
       <shaderMaterial
+        ref={birdMaterial}
         uniforms={birdUniforms.current}
         vertexShader={birdVertex}
         fragmentShader={birdFragment}
