@@ -4,6 +4,7 @@ import { useFrame, useThree } from '@react-three/fiber'
 import { RigidBody } from '@react-three/rapier'
 import { useState } from 'react'
 import { Vector2, Vector3 } from 'three'
+import { Fishs } from './Fish'
 import { SingleKelpTile } from './Kelp'
 
 export const Floor = () => {
@@ -76,6 +77,10 @@ export function Terrain() {
 
   return (
     <>
+      <group position={new Vector3(0, 5, 0)}>
+        <Fishs />
+      </group>
+
       {Object.values(chunks).map((chunk) => {
         return (
           <group position={new Vector3(chunk.offset.x, 0, chunk.offset.y)} key={chunk.id}>
