@@ -1,10 +1,6 @@
 import { Fishs } from '@components/canvas/Fish'
-import { SwimmingPlayerControls } from '@components/canvas/FlyingPlayer'
-import { KeyboardControls, OrbitControls } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
-import { Physics } from '@react-three/rapier'
 import { Perf } from 'r3f-perf'
-// import { OrbitControls } from 'three-stdlib'
 
 export default function Page() {
   return (

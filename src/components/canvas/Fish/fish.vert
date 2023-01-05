@@ -3,8 +3,14 @@ attribute vec2 reference;
 uniform sampler2D texturePosition;
 uniform sampler2D textureVelocity;
 uniform float time;
+uniform float minX;
+uniform float maxX;
 
 varying float z;
+
+float remap(float value, float min1, float max1, float min2, float max2) {
+  return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+}
 
 void main() {
 
@@ -16,7 +22,7 @@ void main() {
 
   vec3 test = mat3(modelMatrix) * newPosition;
 
-  z = 0.5 - test.x / 40.;
+  z = remap(test.x, minX, maxX, 1., 0.);
 
   newPosition.x += sin(time / 1000.0 * 10. + z * 2.) * 6. * z;
 

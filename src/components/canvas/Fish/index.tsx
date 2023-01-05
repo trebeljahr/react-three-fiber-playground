@@ -91,6 +91,8 @@ export function Fishs() {
       textureVelocity: { value: null },
       time: { value: 1.0 },
       delta: { value: 0.0 },
+      minX: { value: 0.0 },
+      maxX: { value: 0.0 },
     }),
     [],
   )
@@ -193,6 +195,8 @@ export function Fishs() {
 
     fishMaterial.current.uniforms['time'].value = now
     fishMaterial.current.uniforms['delta'].value = delta
+    fishMaterial.current.uniforms.minX.value = minX
+    fishMaterial.current.uniforms.maxX.value = maxX
 
     velocityUniforms.current['predator'].value.set(
       (0.5 * mouseX.current) / windowHalfX,
@@ -218,11 +222,29 @@ export function Fishs() {
 
   const { nodes } = useFish1()
 
-  const customFishGeometry = useMemo(() => {
+  const { fishGeo, minX, maxX } = useMemo(() => {
     const merged = mergeBufferGeometries([nodes.Fish_1.geometry, nodes.Fish_2.geometry, nodes.Fish_3.geometry])
     const fishGeo = merged
-    fishGeo.rotateX(-Math.PI / 2)
+    const scale = 700
+    fishGeo.scale(scale, scale, scale)
 
+    console.log(fishGeo)
+
+    fishGeo.rotateX(-Math.PI / 2)
+    let currentMin = Infinity
+    let currentMax = -Infinity
+    for (let i = 0; i < fishGeo.attributes.position.array.length; i += 3) {
+      console.log('hi')
+      const x = fishGeo.attributes.position.array[i + 2]
+      currentMin = Math.min(currentMin, x)
+      currentMax = Math.max(currentMax, x)
+    }
+
+    console.log(currentMin, currentMax)
+    return { fishGeo, minX: currentMin, maxX: currentMax }
+  }, [nodes])
+
+  const customFishGeometry = useMemo(() => {
     const allFishes = new BufferGeometry()
 
     const totalVertices = fishGeo.getAttribute('position').count * 3 * FISH_AMOUNT
@@ -230,17 +252,19 @@ export function Fishs() {
     const vertices = []
     const reference = []
     const indices = []
+    const normals = []
 
     for (let i = 0; i < totalVertices; i++) {
       const fishIndex = i % (fishGeo.getAttribute('position').count * 3)
       vertices.push(fishGeo.getAttribute('position').array[fishIndex])
+      normals.push(fishGeo.getAttribute('normal').array[fishIndex])
     }
 
     let r = Math.random()
     for (let i = 0; i < fishGeo.getAttribute('position').count * FISH_AMOUNT; i++) {
       const fishIndex = i % fishGeo.getAttribute('position').count
       const fish = Math.floor(i / fishGeo.getAttribute('position').count)
-      if (fishIndex == 0) r = Math.random()
+      if (fishIndex === 0) r = Math.random()
       const j = ~~fish
       const x = (j % WIDTH) / WIDTH
       const y = ~~(j / WIDTH) / WIDTH
@@ -253,16 +277,13 @@ export function Fishs() {
     }
 
     allFishes.setAttribute('position', new BufferAttribute(new Float32Array(vertices), 3))
+    allFishes.setAttribute('normal', new BufferAttribute(new Float32Array(normals), 3))
     allFishes.setAttribute('reference', new BufferAttribute(new Float32Array(reference), 2))
 
     allFishes.setIndex(indices)
 
-    console.log(allFishes)
-    const scale = 700
-    allFishes.scale(scale, scale, scale)
-
     return allFishes
-  }, [nodes])
+  }, [fishGeo])
 
   return (
     <mesh ref={fishMesh} geometry={customFishGeometry}>
