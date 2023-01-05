@@ -30,7 +30,7 @@ import { useState } from 'react'
 import { mergeBufferGeometries } from 'three-stdlib'
 
 const WIDTH = 10
-const BOUNDS = 800
+const BOUNDS = 20
 const BOUNDS_HALF = BOUNDS / 2
 const FISH_AMOUNT = WIDTH * WIDTH
 
@@ -57,9 +57,9 @@ function fillVelocityTexture(texture: DataTexture) {
     const y = Math.random() - 0.5
     const z = Math.random() - 0.5
 
-    theArray[k + 0] = x * 10
-    theArray[k + 1] = y * 10
-    theArray[k + 2] = z * 10
+    theArray[k + 0] = x
+    theArray[k + 1] = y
+    theArray[k + 2] = z
     theArray[k + 3] = 1
   }
 }
@@ -163,20 +163,20 @@ export function Fishs() {
   const windowHalfX = useMemo(() => width / 2, [width])
   const windowHalfY = useMemo(() => height / 2, [height])
 
-  useEffect(() => {
-    function onPointerMove(event: PointerEvent) {
-      if (event.isPrimary === false) return
+  // useEffect(() => {
+  //   function onPointerMove(event: PointerEvent) {
+  //     if (event.isPrimary === false) return
 
-      mouseX.current = event.clientX - windowHalfX
-      mouseY.current = event.clientY - windowHalfY
-    }
+  //     mouseX.current = event.clientX - windowHalfX
+  //     mouseY.current = event.clientY - windowHalfY
+  //   }
 
-    document.addEventListener('pointermove', onPointerMove)
+  //   document.addEventListener('pointermove', onPointerMove)
 
-    return () => {
-      document.removeEventListener('pointermove', onPointerMove)
-    }
-  }, [windowHalfX, windowHalfY])
+  //   return () => {
+  //     document.removeEventListener('pointermove', onPointerMove)
+  //   }
+  // }, [windowHalfX, windowHalfY])
 
   const last = useRef(performance.now())
 
@@ -198,13 +198,13 @@ export function Fishs() {
     fishMaterial.current.uniforms.minX.value = minX
     fishMaterial.current.uniforms.maxX.value = maxX
 
-    velocityUniforms.current['predator'].value.set(
-      (0.5 * mouseX.current) / windowHalfX,
-      (-0.5 * mouseY.current) / windowHalfY,
-      0,
-    )
-    mouseX.current = 10000
-    mouseY.current = 10000
+    // velocityUniforms.current['predator'].value.set(
+    //   (0.5 * mouseX.current) / windowHalfX,
+    //   (-0.5 * mouseY.current) / windowHalfY,
+    //   0,
+    // )
+    // mouseX.current = 10000
+    // mouseY.current = 10000
 
     gpuCompute.compute()
 
@@ -225,22 +225,22 @@ export function Fishs() {
   const { fishGeo, minX, maxX } = useMemo(() => {
     const merged = mergeBufferGeometries([nodes.Fish_1.geometry, nodes.Fish_2.geometry, nodes.Fish_3.geometry])
     const fishGeo = merged
-    const scale = 700
+    const scale = 100
     fishGeo.scale(scale, scale, scale)
 
-    console.log(fishGeo)
+    // console.log(fishGeo)
 
     fishGeo.rotateX(-Math.PI / 2)
     let currentMin = Infinity
     let currentMax = -Infinity
     for (let i = 0; i < fishGeo.attributes.position.array.length; i += 3) {
-      console.log('hi')
+      // console.log('hi')
       const x = fishGeo.attributes.position.array[i + 2]
       currentMin = Math.min(currentMin, x)
       currentMax = Math.max(currentMax, x)
     }
 
-    console.log(currentMin, currentMax)
+    // console.log(currentMin, currentMax)
     return { fishGeo, minX: currentMin, maxX: currentMax }
   }, [nodes])
 

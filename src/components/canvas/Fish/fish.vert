@@ -24,7 +24,7 @@ void main() {
 
   z = remap(test.x, minX, maxX, 1., 0.);
 
-  newPosition.x += sin(time / 1000.0 * 10. + z * 2.) * 6. * z;
+  newPosition.x += sin(time / 1000.0 * 10. + z * 2.) * z;
 
   newPosition = mat3(modelMatrix) * newPosition;
 

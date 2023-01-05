@@ -22,13 +22,13 @@ float separationThresh = 0.45;
 float alignmentThresh = 0.65;
 
 const float UPPER_BOUNDS = BOUNDS;
-const float LOWER_BOUNDS = -UPPER_BOUNDS;
+// const float LOWER_BOUNDS = -UPPER_BOUNDS;
 
-const float SPEED_LIMIT = 9.0;
+const float SPEED_LIMIT = 4.0;
 
-float rand(vec2 co) {
-  return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
-}
+// float rand(vec2 co) {
+//   return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
+// }
 
 void main() {
   zoneRadius = separationDistance + alignmentDistance + cohesionDistance;
@@ -46,8 +46,8 @@ void main() {
   vec3 dir; // direction
   float distSquared;
 
-  float separationSquared = separationDistance * separationDistance;
-  float cohesionSquared = cohesionDistance * cohesionDistance;
+  // float separationSquared = separationDistance * separationDistance;
+  // float cohesionSquared = cohesionDistance * cohesionDistance;
 
   float f;
   float percent;
@@ -81,7 +81,7 @@ void main() {
   dist = length(dir);
 
   dir.y *= 2.5;
-  velocity -= normalize(dir) * delta * 5.;
+  velocity -= normalize(dir) * delta;
 
   for (float y = 0.0; y < height; y++) {
     for (float x = 0.0; x < width; x++) {
