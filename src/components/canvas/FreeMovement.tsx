@@ -1,20 +1,16 @@
-import { Whale } from '@models/fish_pack'
-import { Environment, PointerLockControls, Sky } from '@react-three/drei'
-import { Physics } from '@react-three/rapier'
-import { MinecraftCreativeControlsPlayer, SwimmingPlayerControls } from './FlyingPlayer'
-import { KelpForest, SingleKelpTile } from './Kelp'
-import { Perf } from 'r3f-perf'
-import { Terrain } from './Terrain'
-import { DepthBufferEffect } from './DepthBuffer'
-import { Effects } from './Effects'
-import { useFrame, useThree } from '@react-three/fiber'
-import { createContext, PropsWithChildren, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { Color, FogExp2 } from 'three'
-import { Ocean } from './Ocean'
-import { Sky as SkyImpl } from 'three-stdlib'
-import { FBOParticles } from './FBOExperiments/Particles'
-import { farOverwater } from './Scene'
 import { useUnderwaterContext, waterHeight } from '@hooks/UnderwaterContext'
+import { Environment, Sky } from '@react-three/drei'
+import { useThree } from '@react-three/fiber'
+import { Physics } from '@react-three/rapier'
+import { Perf } from 'r3f-perf'
+import { useEffect, useRef } from 'react'
+import { Color } from 'three'
+import { Sky as SkyImpl } from 'three-stdlib'
+import { Effects } from './Effects'
+import { SwimmingPlayerControls } from './FlyingPlayer'
+import { Ocean } from './Ocean'
+import { farOverwater } from './Scene'
+import { Terrain } from './Terrain'
 import { UI } from './UI'
 
 // color palette underwater
@@ -67,14 +63,6 @@ export default function FreeMovement() {
           <Sky ref={skyRef} azimuth={1} inclination={0.6} distance={2000} />
         </>
       )}
-
-      {/* <Box args={[1, 1, 1]} /> */}
-      {/* <InstancedWhale scale={[100, 100, 100]} position={[0, 0, 0]} /> */}
-      {/* <Whale scale={[5, 5, 5]} position={[0, 60, 0]} /> */}
-      {/* <KelpForest /> */}
-      {/* <SingleKelp /> */}
-      {/* <SingleKelpTile /> */}
-      {/* <DepthBufferEffect /> */}
 
       <Effects />
     </>

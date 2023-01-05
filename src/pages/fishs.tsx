@@ -1,11 +1,15 @@
 import { Fishs } from '@components/canvas/Fish'
+import { Box } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { Perf } from 'r3f-perf'
 
 export default function Page() {
   return (
-    <Canvas camera={{ position: [0, 0, 350], near: 1, far: 3000 }}>
+    <Canvas camera={{ position: [0, 0, 50], near: 1, far: 3000 }}>
       <Fishs />
+      <Box args={[1, 1, 1]}>
+        <meshPhysicalMaterial color='pink' />
+      </Box>
       <ambientLight />
       <fog color={0xffffff} near={100} far={1000} />
       <Perf />

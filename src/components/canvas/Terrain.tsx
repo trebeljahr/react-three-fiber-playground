@@ -77,18 +77,22 @@ export function Terrain() {
 
   return (
     <>
-      <group position={new Vector3(0, 5, 0)} scale={0.1}>
+      <group position={new Vector3(0, 0, 0)}>
         <Fishs />
       </group>
 
-      {/* {Object.values(chunks).map((chunk) => {
+      <Box args={[1, 1, 1]}>
+        <meshPhysicalMaterial color='pink' />
+      </Box>
+
+      {Object.values(chunks).map((chunk) => {
         return (
           <group position={new Vector3(chunk.offset.x, 0, chunk.offset.y)} key={chunk.id}>
             <SingleKelpTile />
             <Plane />
           </group>
         )
-      })} */}
+      })}
     </>
   )
 }

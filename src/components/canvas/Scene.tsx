@@ -2,8 +2,8 @@ import { KeyboardControls, Preload } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 
 export const surfaceLevel = 100
-export const farUnderwater = 100
-export const farOverwater = 1000
+export const farUnderwater = 50
+export const farOverwater = 100
 
 export default function Scene({ children, ...props }) {
   return (

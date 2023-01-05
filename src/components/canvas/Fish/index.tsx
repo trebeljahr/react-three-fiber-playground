@@ -29,38 +29,34 @@ import { randFloat } from 'three/src/math/MathUtils'
 import { useState } from 'react'
 import { mergeBufferGeometries } from 'three-stdlib'
 
-const WIDTH = 10
-const BOUNDS = 20
+const WIDTH = 30
+const BOUNDS = 10
 const BOUNDS_HALF = BOUNDS / 2
 const FISH_AMOUNT = WIDTH * WIDTH
 
 function fillPositionTexture(texture: DataTexture) {
-  const theArray = texture.image.data
-
-  for (let k = 0, kl = theArray.length; k < kl; k += 4) {
+  for (let k = 0, kl = texture.image.data.length; k < kl; k += 4) {
     const x = Math.random() * BOUNDS - BOUNDS_HALF
     const y = Math.random() * BOUNDS - BOUNDS_HALF
     const z = Math.random() * BOUNDS - BOUNDS_HALF
 
-    theArray[k + 0] = x
-    theArray[k + 1] = y
-    theArray[k + 2] = z
-    theArray[k + 3] = 1
+    texture.image.data[k + 0] = x
+    texture.image.data[k + 1] = y
+    texture.image.data[k + 2] = z
+    texture.image.data[k + 3] = 1
   }
 }
 
 function fillVelocityTexture(texture: DataTexture) {
-  const theArray = texture.image.data
-
-  for (let k = 0, kl = theArray.length; k < kl; k += 4) {
+  for (let k = 0, kl = texture.image.data.length; k < kl; k += 4) {
     const x = Math.random() - 0.5
     const y = Math.random() - 0.5
     const z = Math.random() - 0.5
 
-    theArray[k + 0] = x
-    theArray[k + 1] = y
-    theArray[k + 2] = z
-    theArray[k + 3] = 1
+    texture.image.data[k + 0] = x
+    texture.image.data[k + 1] = y
+    texture.image.data[k + 2] = z
+    texture.image.data[k + 3] = 1
   }
 }
 
@@ -83,7 +79,21 @@ export function Fishs() {
   const velocityVariable = useRef<Variable>()
   const positionVariable = useRef<Variable>()
   const positionUniforms = useRef<Uniforms>()
+  // {
+  //   time: { value: 0.0 },
+  //   delta: { value: 0.0 },
+  // }
   const velocityUniforms = useRef<Uniforms>()
+  //   {
+  //   time: { value: 0.0 },
+  //   delta: { value: 0.0 },
+  //   testing: { value: 1.0 },
+  //   separationDistance: { value: 1.0 },
+  //   alignmentDistance: { value: 1.0 },
+  //   cohesionDistance: { value: 1.0 },
+  //   freedomFactor: { value: 1.0 },
+  //   predator: { value: new Vector3(1, 1, 1) },
+  // }
   const fishUniforms = useMemo<Uniforms>(
     () => ({
       color: { value: new Color(0xff2200) },
@@ -99,12 +109,6 @@ export function Fishs() {
 
   useEffect(() => {
     function initComputeRenderer() {
-      //   gpuCompute = new GPUComputationRenderer(WIDTH, WIDTH, renderer)
-
-      //   if (renderer.capabilities.isWebGL2 === false) {
-      //     gpuCompute.setDataType(HalfFloatType)
-      //   }
-
       const dtPosition = gpuCompute.createTexture()
       const dtVelocity = gpuCompute.createTexture()
       fillPositionTexture(dtPosition)
@@ -129,6 +133,7 @@ export function Fishs() {
       velocityUniforms.current['cohesionDistance'] = { value: 1.0 }
       velocityUniforms.current['freedomFactor'] = { value: 1.0 }
       velocityUniforms.current['predator'] = { value: new Vector3(1, 1, 1) }
+
       velocityVariable.current.material.defines.BOUNDS = BOUNDS.toFixed(2)
 
       velocityVariable.current.wrapS = RepeatWrapping
@@ -156,31 +161,11 @@ export function Fishs() {
     return () => gpuCompute && gpuCompute.dispose()
   }, [gpuCompute])
 
-  const mouseX = useRef(10000)
-  const mouseY = useRef(10000)
-
-  const { width, height } = useThree((state) => state.size)
-  const windowHalfX = useMemo(() => width / 2, [width])
-  const windowHalfY = useMemo(() => height / 2, [height])
-
-  // useEffect(() => {
-  //   function onPointerMove(event: PointerEvent) {
-  //     if (event.isPrimary === false) return
-
-  //     mouseX.current = event.clientX - windowHalfX
-  //     mouseY.current = event.clientY - windowHalfY
-  //   }
-
-  //   document.addEventListener('pointermove', onPointerMove)
-
-  //   return () => {
-  //     document.removeEventListener('pointermove', onPointerMove)
-  //   }
-  // }, [windowHalfX, windowHalfY])
-
   const last = useRef(performance.now())
 
   useFrame(() => {
+    if (!velocityVariable.current || !positionVariable.current) return
+
     const now = performance.now()
     let delta = (now - last.current) / 1000
 
@@ -198,23 +183,13 @@ export function Fishs() {
     fishMaterial.current.uniforms.minX.value = minX
     fishMaterial.current.uniforms.maxX.value = maxX
 
-    // velocityUniforms.current['predator'].value.set(
-    //   (0.5 * mouseX.current) / windowHalfX,
-    //   (-0.5 * mouseY.current) / windowHalfY,
-    //   0,
-    // )
-    // mouseX.current = 10000
-    // mouseY.current = 10000
-
     gpuCompute.compute()
 
-    fishMaterial.current.uniforms['texturePosition'].value = gpuCompute.getCurrentRenderTarget(
-      positionVariable.current,
-    ).texture
+    const posValue = gpuCompute.getCurrentRenderTarget(positionVariable.current).texture
+    fishMaterial.current.uniforms['texturePosition'].value = posValue
 
-    fishMaterial.current.uniforms['textureVelocity'].value = gpuCompute.getCurrentRenderTarget(
-      velocityVariable.current,
-    ).texture
+    const velValue = gpuCompute.getCurrentRenderTarget(velocityVariable.current).texture
+    fishMaterial.current.uniforms['textureVelocity'].value = velValue
   })
 
   const fishMesh = useRef<Mesh<BufferGeometry, ShaderMaterial>>()
@@ -225,22 +200,18 @@ export function Fishs() {
   const { fishGeo, minX, maxX } = useMemo(() => {
     const merged = mergeBufferGeometries([nodes.Fish_1.geometry, nodes.Fish_2.geometry, nodes.Fish_3.geometry])
     const fishGeo = merged
-    const scale = 100
+    const scale = 10
     fishGeo.scale(scale, scale, scale)
-
-    // console.log(fishGeo)
 
     fishGeo.rotateX(-Math.PI / 2)
     let currentMin = Infinity
     let currentMax = -Infinity
     for (let i = 0; i < fishGeo.attributes.position.array.length; i += 3) {
-      // console.log('hi')
       const x = fishGeo.attributes.position.array[i + 2]
       currentMin = Math.min(currentMin, x)
       currentMax = Math.max(currentMax, x)
     }
 
-    // console.log(currentMin, currentMax)
     return { fishGeo, minX: currentMin, maxX: currentMax }
   }, [nodes])
 
@@ -298,65 +269,4 @@ export function Fishs() {
       />
     </mesh>
   )
-}
-
-class FishGeometry extends BufferGeometry {
-  constructor() {
-    super()
-
-    const trianglesPerFish = 3
-    const triangles = FISH_AMOUNT * trianglesPerFish
-    const points = triangles * 3
-
-    const vertices = new BufferAttribute(new Float32Array(points * 3), 3)
-    const fishColors = new BufferAttribute(new Float32Array(points * 3), 3)
-    const references = new BufferAttribute(new Float32Array(points * 2), 2)
-    const fishVertex = new BufferAttribute(new Float32Array(points), 1)
-
-    this.setAttribute('position', vertices)
-    this.setAttribute('fishColor', fishColors)
-    this.setAttribute('reference', references)
-    this.setAttribute('fishVertex', fishVertex)
-
-    let v = 0
-
-    function verts_push(...args: number[]) {
-      for (let i = 0; i < args.length; i++) {
-        ;(vertices.array as number[])[v++] = args[i]
-      }
-    }
-
-    const wingsSpan = 20
-
-    for (let f = 0; f < FISH_AMOUNT; f++) {
-      verts_push(0, -0, -20, 0, 4, -20, 0, 0, 30)
-      verts_push(0, 0, -15, -wingsSpan, 0, 0, 0, 0, 15)
-      verts_push(0, 0, 15, wingsSpan, 0, 0, 0, 0, -15)
-    }
-
-    for (let v = 0; v < triangles * 3; v++) {
-      const triangleIndex = ~~(v / 3)
-      const fishIndex = ~~(triangleIndex / trianglesPerFish)
-      const x = (fishIndex % WIDTH) / WIDTH
-      const y = ~~(fishIndex / WIDTH) / WIDTH
-
-      const c = new Color(0x444444 + (~~(v / 9) / FISH_AMOUNT) * 0x666666)
-      ;(fishColors.array as number[])[v * 3 + 0] = c.r
-      ;(fishColors.array as number[])[v * 3 + 1] = c.g
-      ;(fishColors.array as number[])[v * 3 + 2] = c.b
-      ;(references.array as number[])[v * 2] = x
-      ;(references.array as number[])[v * 2 + 1] = y
-      ;(fishVertex.array as number[])[v] = v % 9
-    }
-
-    this.scale(0.2, 0.2, 0.2)
-  }
-}
-
-extend({ FishGeometry })
-
-declare module '@react-three/fiber' {
-  interface ThreeElements {
-    fishGeometry: Object3DNode<FishGeometry, typeof FishGeometry>
-  }
 }
