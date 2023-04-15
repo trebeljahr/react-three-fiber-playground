@@ -7,11 +7,11 @@ import { useEffect, useRef } from 'react'
 import { Color } from 'three'
 import { Sky as SkyImpl } from 'three-stdlib'
 import { Effects } from './Effects'
-import { SwimmingPlayerControls } from './FlyingPlayer'
 import { Ocean } from './Ocean'
 import { farOverwater } from './Scene'
 import { Terrain } from './Terrain'
 import { UI } from './UI'
+import { SwimmingPlayer } from './Controls/SwimmingPlayer'
 
 // color palette underwater
 // #daf8e3
@@ -46,7 +46,7 @@ export default function FreeMovement() {
       <Environment near={1} far={farOverwater} resolution={256} files='/skybox.hdr' />
       <UI />
       <Physics>
-        <SwimmingPlayerControls />
+        <SwimmingPlayer />
       </Physics>
       <Perf />
 

@@ -26,7 +26,7 @@ export default function Page() {
           { name: 'attack', keys: ['F', 'f'] },
         ]}>
         <Physics>
-          <SwimmingPlayerControls />
+          <SwimmingPlayer />
         </Physics>
       </KeyboardControls> */}
     </Canvas>

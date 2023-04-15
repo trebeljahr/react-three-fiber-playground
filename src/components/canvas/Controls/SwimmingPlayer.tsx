@@ -4,12 +4,21 @@ import { PointerLockControls, useKeyboardControls } from '@react-three/drei'
 import { PropsWithChildren, useEffect, useRef } from 'react'
 import { RigidBody, RigidBodyApi } from '@react-three/rapier'
 import { clamp, lerp } from 'three/src/math/MathUtils'
+import { PlayerControlProps, WithDefaultControls } from './DefaultControls'
 
 const direction = new Vector3()
 const frontVector = new Vector3()
 const sideVector = new Vector3()
 
-export function SwimmingPlayerControls({ children, speed = 5 }: PropsWithChildren<{ speed?: number }>) {
+export function SwimmingPlayer(props: PlayerControlProps) {
+  return (
+    <WithDefaultControls>
+      <SwimmingPlayerControls {...props} />
+    </WithDefaultControls>
+  )
+}
+
+function SwimmingPlayerControls({ children, speed = 5 }: PropsWithChildren<{ speed?: number }>) {
   const [subscribe, get] = useKeyboardControls()
   const ref = useRef<RigidBodyApi>()
   const { camera } = useThree()
@@ -48,47 +57,6 @@ export function SwimmingPlayerControls({ children, speed = 5 }: PropsWithChildre
       .add(new Vector3(0, +jump - +descend, 0))
       .normalize()
       .multiplyScalar(speed * speedFactor.current)
-
-    ref.current.setLinvel({ x: direction.x, y: direction.y, z: direction.z })
-  })
-
-  return (
-    <>
-      <RigidBody
-        ref={ref}
-        colliders={false}
-        mass={1}
-        type='dynamic'
-        position={[0, 10, 0]}
-        enabledRotations={[false, false, false]}>
-        {children}
-      </RigidBody>
-      <PointerLockControls />
-    </>
-  )
-}
-
-export function FlyingPlayerControls({ children, speed = 10 }: PropsWithChildren<{ speed?: number }>) {
-  const [, get] = useKeyboardControls()
-  const ref = useRef<RigidBodyApi>()
-  const { camera } = useThree()
-
-  useFrame(() => {
-    if (!ref.current) return
-
-    const { forward, backward, left, right, jump, descend } = get()
-
-    camera.position.set(...ref.current.translation().toArray())
-
-    frontVector.set(0, 0, +backward - +forward)
-    sideVector.set(+left - +right, 0, 0)
-
-    direction
-      .subVectors(frontVector, sideVector)
-      .normalize()
-      .multiplyScalar(speed)
-      .applyEuler(camera.rotation)
-      .setY((+jump - +descend) * speed)
 
     ref.current.setLinvel({ x: direction.x, y: direction.y, z: direction.z })
   })

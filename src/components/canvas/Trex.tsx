@@ -1,11 +1,12 @@
-import * as THREE from 'three'
-import React, { forwardRef, MutableRefObject, Ref, useEffect, useRef, useState } from 'react'
-import { useGLTF, useAnimations, useKeyboardControls } from '@react-three/drei'
-import { GLTF } from 'three-stdlib'
-import { Camera, useFrame, useThree } from '@react-three/fiber'
-import { AnimationAction, AnimationClip, AnimationMixer, Group, LoopOnce, Object3D, Vector3 } from 'three'
-import { usePrevious } from '@hooks/usePrevious'
+import { GenericAnimationController } from '@hacks/GenericAnimationController'
 import { useAnimationsWithCleanup } from '@hooks/useAnimationsWithCleanup'
+import { usePrevious } from '@hooks/usePrevious'
+import { useGLTF, useKeyboardControls } from '@react-three/drei'
+import { useFrame, useThree } from '@react-three/fiber'
+import { useEffect, useRef, useState } from 'react'
+import * as THREE from 'three'
+import { Group, LoopOnce, Vector3 } from 'three'
+import { GLTF } from 'three-stdlib'
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -70,7 +71,7 @@ export function FollowingTrex() {
 }
 
 function AnimationController({ actions }: { actions: PossibleActions }) {
-  const [state, setState] = useState<ActionName>('Armature|TRex_Attack')
+  const [state, setState] = useState<ActionName>('Armature|TRex_Idle')
   const previousState = usePrevious(state)
 
   const [subscribe] = useKeyboardControls()
@@ -78,7 +79,8 @@ function AnimationController({ actions }: { actions: PossibleActions }) {
   useEffect(() => {
     subscribe((state) => {
       if (!actions) return
-      const { attack, jump, forward, backward, left, right } = state
+
+      const { attack, jump, forward, backward, left, right, sprint } = state
       if (attack) {
         if (!actions['Armature|TRex_Attack']) return
         actions['Armature|TRex_Attack'].setLoop(LoopOnce, 1)
@@ -94,9 +96,11 @@ function AnimationController({ actions }: { actions: PossibleActions }) {
         }
       }
       if (forward || backward || left || right) {
-        return setState('Armature|TRex_Run')
+        if (sprint) return setState('Armature|TRex_Run')
+
+        return setState('Armature|TRex_Walk')
       }
-      // return setState('Armature|TRex_Idle')
+      return setState('Armature|TRex_Idle')
     })
   }, [actions, subscribe])
 
@@ -115,27 +119,18 @@ export const useTrex = () => {
   return useGLTF('/Trex.glb') as unknown as GLTFResult
 }
 
-export const Trex = (props: JSX.IntrinsicElements['group'] & { withAnimations?: boolean }) => {
+export const Trex = (
+  props: JSX.IntrinsicElements['group'] & { withAnimations?: boolean; withAnimationController?: boolean },
+) => {
   const ref = useRef<Group>()
-  const trex = useGLTF('/Trex.glb') as unknown as GLTFResult
-
-  const { nodes, materials, animations } = trex
-  // const { nodes, materials, animations } = useGLTF('/Trex.glb') as unknown as GLTFResult
-  const { withAnimations = false } = props
+  const { nodes, materials, animations } = useGLTF('/Trex.glb') as unknown as GLTFResult
+  const { withAnimations = false, withAnimationController = false } = props
   const { actions } = useAnimationsWithCleanup(animations, ref)
-
-  useEffect(() => {
-    const animation = 'Armature|TRex_Run'
-    console.log(actions)
-    actions[animation]?.reset().fadeIn(0.5).play()
-    return () => {
-      actions[animation]?.fadeOut(0.5)
-    }
-  }, [actions])
 
   return (
     <group {...props} ref={ref} dispose={null}>
-      {/* {withAnimations && <AnimationController actions={actions} />} */}
+      {withAnimationController && <GenericAnimationController actions={actions} />}
+      {withAnimations && <AnimationController actions={actions} />}
       <group name='Armature' rotation={[-Math.PI / 2, 0, Math.PI]} scale={300}>
         <primitive object={nodes.root} />
       </group>
