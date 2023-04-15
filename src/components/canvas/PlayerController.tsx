@@ -160,7 +160,7 @@ export function useCharacterController(
         walkDirection.y += lerp(storedFallRef.current, -9.81 * delta, 0.1)
         storedFallRef.current = walkDirection.y
         const ray = new Ray(translation, { x: 0, y: -1, z: 0 })
-        let hit = world.castRay(ray, 0.5, false, 0xfffffffff)
+        let hit = world.castRay(ray, 0.5, false)
         if (hit) {
           const grounded = hit && hit.collider && Math.abs(hit.toi) <= 1.75
           if (grounded) {

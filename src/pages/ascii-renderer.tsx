@@ -1,9 +1,9 @@
-import { AsciiRenderer, OrbitControls, PointerLockControls, Stage } from '@react-three/drei'
-import { Canvas } from '@react-three/fiber'
+import { AsciiRenderer, PointerLockControls, Stage } from '@react-three/drei'
 import { Perf } from 'r3f-perf'
 import { Trex } from '@components/canvas/Trex'
 import { MinecraftCreativeControlsPlayer } from '@components/canvas/FlyingPlayer'
 import { Physics } from '@react-three/rapier'
+import { CustomAsciiRenderer } from '@hacks/CustomASCIIRenderer'
 
 export default function Page() {
   return <></>
@@ -12,20 +12,19 @@ export default function Page() {
 Page.canvas = () => {
   return (
     <>
+      <Perf />
       <Physics>
         <MinecraftCreativeControlsPlayer />
       </Physics>
-      <PointerLockControls />
+      {/* <PointerLockControls /> */}
 
       <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
       <pointLight position={[-10, -10, -10]} />
 
       <color attach='background' args={['black']} />
 
-      <Stage adjustCamera intensity={0.5} shadows='contact' environment='city'>
-        <Trex />
-      </Stage>
-      <AsciiRenderer resolution={0.4} />
+      <Trex withAnimations={true} position={[0, 0, -20]} rotation={[0, Math.PI / 2, 0]} />
+      <CustomAsciiRenderer resolution={0.2} />
     </>
   )
 }
