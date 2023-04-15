@@ -1,9 +1,9 @@
-import { AsciiRenderer, PointerLockControls, Stage } from '@react-three/drei'
 import { Perf } from 'r3f-perf'
 import { Trex } from '@components/canvas/Trex'
-import { MinecraftCreativeControlsPlayer } from '@components/canvas/FlyingPlayer'
+import { FlyingPlayerControls as FlyingPlayerControls } from '@components/canvas/FlyingPlayer'
 import { Physics } from '@react-three/rapier'
 import { CustomAsciiRenderer } from '@hacks/CustomASCIIRenderer'
+import { useRef } from 'react'
 
 export default function Page() {
   return <></>
@@ -14,12 +14,11 @@ Page.canvas = () => {
     <>
       <Perf />
       <Physics>
-        <MinecraftCreativeControlsPlayer />
+        <FlyingPlayerControls />
       </Physics>
-      {/* <PointerLockControls /> */}
 
-      <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
-      <pointLight position={[-10, -10, -10]} />
+      <spotLight position={[0, 20, 20]} angle={0.15} penumbra={1} />
+      <pointLight position={[0, 20, -20]} />
 
       <color attach='background' args={['black']} />
 

@@ -24,7 +24,6 @@ export function useAnimationsWithCleanup<T extends AnimationClip>(
       Object.defineProperty(actions, clip.name, {
         enumerable: true,
         get() {
-          console.log(actualRef.current)
           if (actualRef.current) {
             return (
               lazyActions.current[clip.name] ||

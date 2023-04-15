@@ -46,7 +46,6 @@ export default function FreeMovement() {
       <Environment near={1} far={farOverwater} resolution={256} files='/skybox.hdr' />
       <UI />
       <Physics>
-        {/* <MinecraftCreativeControlsPlayer /> */}
         <SwimmingPlayerControls />
       </Physics>
       <Perf />

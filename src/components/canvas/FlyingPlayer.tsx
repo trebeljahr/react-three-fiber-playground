@@ -5,12 +5,11 @@ import { PropsWithChildren, useEffect, useRef } from 'react'
 import { RigidBody, RigidBodyApi } from '@react-three/rapier'
 import { clamp, lerp } from 'three/src/math/MathUtils'
 
-const SPEED = 5
 const direction = new Vector3()
 const frontVector = new Vector3()
 const sideVector = new Vector3()
 
-export function SwimmingPlayerControls({ children }: PropsWithChildren) {
+export function SwimmingPlayerControls({ children, speed = 5 }: PropsWithChildren<{ speed?: number }>) {
   const [subscribe, get] = useKeyboardControls()
   const ref = useRef<RigidBodyApi>()
   const { camera } = useThree()
@@ -48,7 +47,7 @@ export function SwimmingPlayerControls({ children }: PropsWithChildren) {
       .applyEuler(camera.rotation)
       .add(new Vector3(0, +jump - +descend, 0))
       .normalize()
-      .multiplyScalar(SPEED * speedFactor.current)
+      .multiplyScalar(speed * speedFactor.current)
 
     ref.current.setLinvel({ x: direction.x, y: direction.y, z: direction.z })
   })
@@ -69,7 +68,7 @@ export function SwimmingPlayerControls({ children }: PropsWithChildren) {
   )
 }
 
-export function MinecraftCreativeControlsPlayer({ children }: PropsWithChildren) {
+export function FlyingPlayerControls({ children, speed = 10 }: PropsWithChildren<{ speed?: number }>) {
   const [, get] = useKeyboardControls()
   const ref = useRef<RigidBodyApi>()
   const { camera } = useThree()
@@ -87,9 +86,9 @@ export function MinecraftCreativeControlsPlayer({ children }: PropsWithChildren)
     direction
       .subVectors(frontVector, sideVector)
       .normalize()
-      .multiplyScalar(SPEED)
+      .multiplyScalar(speed)
       .applyEuler(camera.rotation)
-      .setY((+jump - +descend) * SPEED)
+      .setY((+jump - +descend) * speed)
 
     ref.current.setLinvel({ x: direction.x, y: direction.y, z: direction.z })
   })

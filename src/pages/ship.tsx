@@ -1,4 +1,4 @@
-import { MinecraftCreativeControlsPlayer } from '@components/canvas/FlyingPlayer'
+import { FlyingPlayerControls } from '@components/canvas/FlyingPlayer'
 import { Ocean } from '@components/canvas/Ocean'
 import { PointerLockControls, Sky } from '@react-three/drei'
 import { Physics } from '@react-three/rapier'
@@ -14,7 +14,7 @@ Page.canvas = () => (
   <>
     <Sky azimuth={1} inclination={0.6} distance={1000} />
     <Physics>
-      <MinecraftCreativeControlsPlayer />
+      <FlyingPlayerControls />
     </Physics>
     <PointerLockControls />
     <Ship />

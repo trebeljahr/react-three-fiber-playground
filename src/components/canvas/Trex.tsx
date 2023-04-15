@@ -5,6 +5,7 @@ import { GLTF } from 'three-stdlib'
 import { Camera, useFrame, useThree } from '@react-three/fiber'
 import { AnimationAction, AnimationClip, AnimationMixer, Group, LoopOnce, Object3D, Vector3 } from 'three'
 import { usePrevious } from '@hooks/usePrevious'
+import { useAnimationsWithCleanup } from '@hooks/useAnimationsWithCleanup'
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -69,7 +70,7 @@ export function FollowingTrex() {
 }
 
 function AnimationController({ actions }: { actions: PossibleActions }) {
-  const [state, setState] = useState<ActionName>('Armature|TRex_Idle')
+  const [state, setState] = useState<ActionName>('Armature|TRex_Attack')
   const previousState = usePrevious(state)
 
   const [subscribe] = useKeyboardControls()
@@ -114,17 +115,27 @@ export const useTrex = () => {
   return useGLTF('/Trex.glb') as unknown as GLTFResult
 }
 
-export const Trex = React.forwardRef(function TrexModel(
-  props: JSX.IntrinsicElements['group'] & { withAnimations?: boolean },
-  ref: MutableRefObject<Group>,
-) {
-  const { nodes, materials, animations } = useGLTF('/Trex.glb') as unknown as GLTFResult
+export const Trex = (props: JSX.IntrinsicElements['group'] & { withAnimations?: boolean }) => {
+  const ref = useRef<Group>()
+  const trex = useGLTF('/Trex.glb') as unknown as GLTFResult
+
+  const { nodes, materials, animations } = trex
+  // const { nodes, materials, animations } = useGLTF('/Trex.glb') as unknown as GLTFResult
   const { withAnimations = false } = props
-  const { actions } = useAnimations(animations, ref)
+  const { actions } = useAnimationsWithCleanup(animations, ref)
+
+  useEffect(() => {
+    const animation = 'Armature|TRex_Run'
+    console.log(actions)
+    actions[animation]?.reset().fadeIn(0.5).play()
+    return () => {
+      actions[animation]?.fadeOut(0.5)
+    }
+  }, [actions])
 
   return (
     <group {...props} ref={ref} dispose={null}>
-      {withAnimations && <AnimationController actions={actions} />}
+      {/* {withAnimations && <AnimationController actions={actions} />} */}
       <group name='Armature' rotation={[-Math.PI / 2, 0, Math.PI]} scale={300}>
         <primitive object={nodes.root} />
       </group>
@@ -162,4 +173,4 @@ export const Trex = React.forwardRef(function TrexModel(
       </group>
     </group>
   )
-})
+}
