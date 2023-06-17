@@ -1,7 +1,7 @@
 import { useFrame, useThree } from '@react-three/fiber'
 import { createContext, PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react'
 
-export const waterHeight = 100
+export const waterHeight = 45
 
 type UnderwaterContextType = {
   underwater: boolean

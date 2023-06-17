@@ -3,7 +3,7 @@ uniform float uTime;
 uniform vec3 cameraLookAt;
 
 #define CAM_DEPTH 30.0
-#define surfaceLevel 100.0
+#define surfaceLevel 45.0
 
 const vec3 up = vec3(0., 1., 0.);
 

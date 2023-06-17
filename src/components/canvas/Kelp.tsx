@@ -78,7 +78,7 @@ export const SingleKelpTile = memo<{ offset?: Vector2 }>(function SingleKelpTile
 
       const temp = new Object3D()
 
-      const localScale = randFloat(0.02, 0.03)
+      const localScale = randFloat(0.02, 0.03) * 5
       temp.position.set(x, 0, z)
       temp.rotation.set(0, 0, 0)
       temp.scale.set(localScale, localScale, localScale)

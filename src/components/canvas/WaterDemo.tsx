@@ -4,14 +4,15 @@ import { useThree } from '@react-three/fiber'
 import { Physics } from '@react-three/rapier'
 import { Perf } from 'r3f-perf'
 import { useEffect, useRef } from 'react'
-import { Color } from 'three'
+import { Color, FogExp2, Vector3 } from 'three'
 import { Sky as SkyImpl } from 'three-stdlib'
 import { Effects } from './Effects'
 import { SwimmingPlayerControls } from './FlyingPlayer'
-import { Ocean } from './Ocean'
+import { OceanSurface } from './Ocean'
 import { farOverwater } from './Scene'
 import { Terrain } from './Terrain'
 import { UI } from './UI'
+import { Fishs } from './Fish'
 
 // color palette underwater
 // #daf8e3
@@ -20,24 +21,28 @@ import { UI } from './UI'
 // #0086ad
 // #005582
 
-export default function FreeMovement() {
+export default function WaterDemo() {
   const { scene } = useThree()
-  // const fogRef = useRef<FogExp2>()
+  const fogRef = useRef<FogExp2>()
   const colorRef = useRef<Color>()
   const skyRef = useRef<SkyImpl>()
   const { underwater } = useUnderwaterContext()
 
   useEffect(() => {
+    console.log(underwater)
     if (!underwater) {
-      // fogRef.current.density = 0.000001
-      // fogRef.current.density = 0.000001
-      // fogRef.current.color = new Color('white')
+      fogRef.current.density = 0.000000001
+      fogRef.current.density = 0.000000001
+      fogRef.current.color = new Color('white')
       scene.background = new Color('white')
+      console.log('setting background to white')
     } else {
-      // fogRef.current.density = 0.02
-      // fogRef.current.density = 0.02
-      // fogRef.current.color = new Color('#0086ad')
+      fogRef.current.density = 0.02
+      fogRef.current.density = 0.02
+      fogRef.current.color = new Color('#0086ad')
       scene.background = new Color('#0086ad')
+      console.log('setting background to blue')
+      colorRef.current.set('#0086ad')
     }
   }, [underwater, scene])
 
@@ -46,23 +51,22 @@ export default function FreeMovement() {
       <Environment near={1} far={farOverwater} resolution={256} files='/skybox.hdr' />
       <UI />
       <Physics>
-        {/* <MinecraftCreativeControlsPlayer /> */}
         <SwimmingPlayerControls />
       </Physics>
       <Perf />
 
-      {/* <fogExp2 ref={fogRef} attach='fog' color='#0086ad' density={0.02} /> */}
+      <fogExp2 ref={fogRef} attach='fog' color='#0086ad' density={0.02} />
       <Terrain />
+      <group position={new Vector3(0, 20, 0)}>
+        <Fishs />
+      </group>
 
-      <Ocean position={[0, waterHeight, 0]} />
+      <OceanSurface position={[0, waterHeight, 0]} />
+      <color ref={colorRef} attach='background' args={['#00332E']} />
 
-      {underwater ? (
-        <color ref={colorRef} attach='background' args={['#00332E']} />
-      ) : (
-        <>
-          <Sky ref={skyRef} azimuth={1} inclination={0.6} distance={2000} />
-        </>
-      )}
+      {
+        !underwater ? <Sky ref={skyRef} azimuth={1} inclination={0.6} distance={2000} /> : null // <color ref={colorRef} attach='background' args={['#00332E']} />
+      }
 
       <Effects />
     </>

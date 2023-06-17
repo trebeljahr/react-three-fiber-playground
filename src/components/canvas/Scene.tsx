@@ -1,7 +1,8 @@
+import { waterHeight } from '@hooks/UnderwaterContext'
 import { KeyboardControls, Preload } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 
-export const surfaceLevel = 100
+export const surfaceLevel = waterHeight
 export const farUnderwater = 50
 export const farOverwater = 100
 

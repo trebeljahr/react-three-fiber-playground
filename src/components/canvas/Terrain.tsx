@@ -77,13 +77,9 @@ export function Terrain() {
 
   return (
     <>
-      <group position={new Vector3(0, 0, 0)}>
-        <Fishs />
-      </group>
-
-      <Box args={[1, 1, 1]}>
+      {/* <Box args={[1, 1, 1]}>
         <meshPhysicalMaterial color='pink' />
-      </Box>
+      </Box> */}
 
       {Object.values(chunks).map((chunk) => {
         return (

@@ -1,5 +1,5 @@
 import { MinecraftCreativeControlsPlayer } from '@components/canvas/FlyingPlayer'
-import { Ocean } from '@components/canvas/Ocean'
+import { OceanSurface } from '@components/canvas/Ocean'
 import { PointerLockControls, Sky } from '@react-three/drei'
 import { Physics } from '@react-three/rapier'
 import dynamic from 'next/dynamic'
@@ -18,6 +18,6 @@ Page.canvas = () => (
     </Physics>
     <PointerLockControls />
     <Ship />
-    <Ocean />
+    <OceanSurface />
   </>
 )

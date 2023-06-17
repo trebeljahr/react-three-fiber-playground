@@ -1,4 +1,4 @@
-import { useUnderwaterContext } from '@hooks/UnderwaterContext'
+import { useUnderwaterContext, waterHeight } from '@hooks/UnderwaterContext'
 import { In } from '@pages'
 import { Html, ScreenSpace } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'
@@ -63,7 +63,7 @@ export function OxygenBar() {
   const depthRef = useRef<HTMLDivElement>()
 
   useFrame(() => {
-    depthRef.current.innerText = `Depth: ${(100 - camera.position.y).toFixed(0)}`
+    depthRef.current.innerText = `Depth: ${(waterHeight - camera.position.y).toFixed(0)}`
   })
 
   return (
@@ -76,7 +76,7 @@ export function OxygenBar() {
       <In>
         <div className='absolute top-0 left-0 z-30'>Oxygen: {oxygenAmount}</div>
         <div ref={depthRef} className='absolute left-0 z-30 top-10'>
-          Depth: {100 - camera.position.y}
+          Depth: {waterHeight - camera.position.y}
         </div>
       </In>
     </>

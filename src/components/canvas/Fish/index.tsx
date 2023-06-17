@@ -257,7 +257,7 @@ export function Fishs() {
   }, [fishGeo])
 
   return (
-    <mesh ref={fishMesh} geometry={customFishGeometry}>
+    <mesh ref={fishMesh} geometry={customFishGeometry} frustumCulled={false}>
       <CustomShaderMaterial
         ref={fishMaterial}
         baseMaterial={MeshPhysicalMaterial}

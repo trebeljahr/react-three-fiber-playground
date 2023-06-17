@@ -11,7 +11,7 @@ declare module '@react-three/fiber' {
   }
 }
 
-export function Ocean({ position = [0, 0, 0] as [number, number, number] }) {
+export function OceanSurface({ position = [0, 0, 0] as [number, number, number] }) {
   const ref = useRef<Water>()
   const gl = useThree((state) => state.gl)
   const waterNormals = useLoader(TextureLoader, '/waternormals.jpeg')
