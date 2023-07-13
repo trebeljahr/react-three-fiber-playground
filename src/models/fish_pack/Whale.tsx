@@ -28,6 +28,12 @@ interface GLTFAction extends THREE.AnimationClip {
   name: ActionName
 }
 
+export function useWhale() {
+  const { nodes, materials } = useGLTF('/glb/fish_pack/Whale.glb') as unknown as GLTFResult
+
+  return { nodes, materials }
+}
+
 export const InstancedWhale = React.forwardRef(function Whale(props: GroupProps, ref?: MutableRefObject<Group>) {
   const fallbackRef = useRef<Group>()
   const groupRef = ref || fallbackRef

@@ -3,9 +3,21 @@ import { useGLTF } from '@react-three/drei'
 import { DoubleSide, Mesh } from 'three'
 import { GroupProps, useLoader } from '@react-three/fiber'
 import { TextureLoader } from 'three/src/loaders/TextureLoader'
+import { GLTF } from 'three-stdlib'
+
+type GLTFResult = GLTF & {
+  nodes: {
+    Cube009: THREE.Mesh
+    Cube009_1: THREE.Mesh
+  }
+  materials: {
+    BirchTree_Bark: THREE.MeshStandardMaterial
+    BirchTree_Leaves: THREE.MeshStandardMaterial
+  }
+}
 
 export function BirchTree(props: GroupProps) {
-  const { nodes, materials } = useGLTF('/BirchTree_5.gltf')
+  const { nodes, materials } = useGLTF('/BirchTree_5.gltf') as unknown as GLTFResult
   const [colorMap, normalMap] = useLoader(TextureLoader, [
     '/textures/BirchTree_Bark.png',
     '/textures/BirchTree_Bark_Normal.png',
@@ -38,7 +50,7 @@ export function BirchTree(props: GroupProps) {
 }
 
 export function BirchTreeWithColors() {
-  const { nodes } = useGLTF('/BirchTree_5.gltf')
+  const { nodes } = useGLTF('/BirchTree_5.gltf') as unknown as GLTFResult
   return (
     <group>
       <mesh geometry={(nodes.Cube009 as Mesh).geometry}>

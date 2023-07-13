@@ -21,20 +21,28 @@ import CustomShaderMaterial from 'three-custom-shader-material'
 import CustomShaderMaterialType from 'three-custom-shader-material/vanilla'
 import { mergeBufferGeometries } from 'three-stdlib'
 import { GPUComputationRenderer, Variable } from 'three/examples/jsm/misc/GPUComputationRenderer'
-import fishFragment from './fish.frag'
-import fishVertex from './fish.vert'
-import positionShader from './position.frag'
-import velocityShader from './velocity.frag'
+import fishFragment from './fishFrag.glsl'
+import fishVertex from './fishVert.glsl'
+import positionShader from './positionFrag.glsl'
+import velocityShader from './velocityFrag.glsl'
+import { useWhale } from '@models/fish_pack/Whale'
+import { useDolphin } from '@models/fish_pack/Dolphin'
+import { useShark } from '@models/fish_pack/Shark'
+import { useMantaRay } from '@models/fish_pack/Ray'
 
 export enum FishType {
   BlueTang,
   DoctorFish,
   ClownFish,
+  Dolphin,
+  Whale,
+  Shark,
+  Manta,
 }
 
 type Uniforms = { [key: string]: IUniform<any> }
 
-export function Fishs({ amountOfFish = 1000, fishType = FishType.ClownFish }) {
+export function Fishs({ amountOfFish = 100, fishType = FishType.DoctorFish, position = new Vector3(0, 20, 0) }) {
   const { gl } = useThree()
 
   const fishTextureWidth = Math.floor(Math.sqrt(amountOfFish))
@@ -162,7 +170,7 @@ export function Fishs({ amountOfFish = 1000, fishType = FishType.ClownFish }) {
   const { fishGeo, minX, maxX } = useMemo(() => {
     const merged = mergeBufferGeometries([...fishGeometryArray])
     const fishGeo = merged
-    const scale = 10000
+    const scale = 500
     fishGeo.scale(scale, scale, scale)
 
     fishGeo.rotateX(-Math.PI / 2)
@@ -219,18 +227,20 @@ export function Fishs({ amountOfFish = 1000, fishType = FishType.ClownFish }) {
   }, [fishGeo])
 
   return (
-    <mesh ref={fishMesh} geometry={customFishGeometry} frustumCulled={false}>
-      <CustomShaderMaterial
-        ref={fishMaterial}
-        baseMaterial={MeshPhysicalMaterial}
-        vertexShader={fishVertex}
-        fragmentShader={fishFragment}
-        uniforms={fishUniforms}
-        flatShading
-        // color={'#4CBB17'}
-        color={'#FF7F50	'}
-      />
-    </mesh>
+    <group position={position} scale={0.1}>
+      <mesh ref={fishMesh} geometry={customFishGeometry} frustumCulled={false}>
+        <CustomShaderMaterial
+          ref={fishMaterial}
+          baseMaterial={MeshPhysicalMaterial}
+          vertexShader={fishVertex}
+          fragmentShader={fishFragment}
+          uniforms={fishUniforms}
+          flatShading
+          // color={'#4CBB17'}
+          color={'#FF7F50	'}
+        />
+      </mesh>
+    </group>
   )
 }
 
@@ -270,6 +280,14 @@ function getFishGeo(typeOfFish: FishType) {
       return useFish2()
     case FishType.ClownFish:
       return useFish3()
+    case FishType.Whale:
+      return useWhale()
+    case FishType.Dolphin:
+      return useDolphin()
+    case FishType.Shark:
+      return useShark()
+    case FishType.Manta:
+      return useMantaRay()
   }
 }
 
@@ -277,7 +295,7 @@ function useFishGeos(typeOfFish: FishType) {
   const { nodes } = getFishGeo(typeOfFish)
 
   const fishGeos = Object.keys(nodes).reduce((agg, key) => {
-    if (!(key.includes('Fish') && nodes[key] instanceof SkinnedMesh)) return agg
+    if (!(nodes[key] instanceof SkinnedMesh)) return agg
 
     return [...agg, nodes[key].geometry]
   }, [])

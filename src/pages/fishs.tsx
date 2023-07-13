@@ -8,7 +8,7 @@ export default function Page() {
   return (
     <Canvas camera={{ position: new Vector3(0, 0, 50), near: 1, far: 3000 }}>
       <Fishs />
-      <Box args={[1, 1, 1]}>
+      <Box args={[1, 1, 1]} getObjectsByProperty={undefined} getVertexPosition={undefined}>
         <meshPhysicalMaterial color='pink' />
       </Box>
       <ambientLight />

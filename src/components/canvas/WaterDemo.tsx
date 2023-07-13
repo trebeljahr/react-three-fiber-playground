@@ -12,7 +12,7 @@ import { OceanSurface } from './Ocean'
 import { farOverwater } from './Scene'
 import { Terrain } from './Terrain'
 import { UI } from './UI'
-import { Fishs } from './Fish'
+import { FishType, Fishs } from './Fish'
 
 // color palette underwater
 // #daf8e3
@@ -63,9 +63,13 @@ export default function WaterDemo() {
       {/* <color ref={colorRef} attach='background' args={['#00332E']} /> */}
 
       <Terrain />
-      <group position={new Vector3(0, 20, 0)} scale={0.1}>
-        <Fishs />
-      </group>
+      <Fishs position={new Vector3(0, 10, 0)} />
+      <Fishs position={new Vector3(10, 10, 0)} fishType={FishType.BlueTang} amountOfFish={300} />
+      <Fishs position={new Vector3(5, 10, 5)} fishType={FishType.Manta} />
+      <Fishs position={new Vector3(0, 10, 10)} fishType={FishType.DoctorFish} />
+      <Fishs position={new Vector3(20, 10, 5)} fishType={FishType.Whale} />
+      <Fishs position={new Vector3(15, 10, 10)} fishType={FishType.Shark} />
+      <Fishs position={new Vector3(10, 5, 0)} fishType={FishType.Dolphin} />
 
       <OceanSurface position={[0, waterHeight, 0]} />
 

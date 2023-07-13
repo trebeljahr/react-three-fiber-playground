@@ -10,7 +10,13 @@ import { SingleKelpTile } from './Kelp'
 export const Floor = () => {
   return (
     <RigidBody type='fixed' colliders='cuboid'>
-      <Box position={[0, -5, 0]} scale={[200, 10, 200]} rotation={[0, 0, 0]} receiveShadow>
+      <Box
+        position={[0, -5, 0]}
+        scale={[200, 10, 200]}
+        rotation={[0, 0, 0]}
+        receiveShadow
+        getObjectsByProperty={undefined}
+        getVertexPosition={undefined}>
         <meshBasicMaterial color='#7EC850' />
       </Box>
     </RigidBody>
