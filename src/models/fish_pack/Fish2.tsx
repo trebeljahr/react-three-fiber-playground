@@ -28,6 +28,12 @@ interface GLTFAction extends THREE.AnimationClip {
   name: ActionName
 }
 
+export function useFish2() {
+  const { nodes, materials } = useGLTF('/glb/fish_pack/Fish2.glb') as unknown as GLTFResult
+
+  return { nodes, materials }
+}
+
 export default function Model(props: JSX.IntrinsicElements['group']) {
   const group = useRef<THREE.Group>()
   const { nodes, materials, animations } = useGLTF('/glb/fish_pack/Fish2.glb') as unknown as GLTFResult

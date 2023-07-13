@@ -1,72 +1,47 @@
 // import { useFBO } from '@react-three/drei'
-import { extend, Object3DNode, useFrame, useThree } from '@react-three/fiber'
+import { useFish1 } from '@models/fish_pack/Fish1'
+import { useFish2 } from '@models/fish_pack/Fish2'
+import { useFish3 } from '@models/fish_pack/Fish3'
+import { useFrame, useThree } from '@react-three/fiber'
 import { useEffect, useMemo, useRef } from 'react'
 import {
   BufferAttribute,
   BufferGeometry,
   Color,
   DataTexture,
-  DoubleSide,
-  DynamicDrawUsage,
-  InstancedMesh,
   IUniform,
   Mesh,
   MeshPhysicalMaterial,
-  Object3D,
   RepeatWrapping,
   ShaderMaterial,
+  SkinnedMesh,
   Vector3,
 } from 'three'
-import { GPUComputationRenderer, Variable } from 'three/examples/jsm/misc/GPUComputationRenderer'
-import positionShader from './position.frag'
-import velocityShader from './velocity.frag'
-import fishVertex from './fish.vert'
-import fishFragment from './fish.frag'
-import { useFish1 } from '@models/fish_pack/Fish1'
 import CustomShaderMaterial from 'three-custom-shader-material'
 import CustomShaderMaterialType from 'three-custom-shader-material/vanilla'
-import { randFloat } from 'three/src/math/MathUtils'
-import { useState } from 'react'
 import { mergeBufferGeometries } from 'three-stdlib'
+import { GPUComputationRenderer, Variable } from 'three/examples/jsm/misc/GPUComputationRenderer'
+import fishFragment from './fish.frag'
+import fishVertex from './fish.vert'
+import positionShader from './position.frag'
+import velocityShader from './velocity.frag'
 
-const WIDTH = 30
-const BOUNDS = 10
-const BOUNDS_HALF = BOUNDS / 2
-const FISH_AMOUNT = WIDTH * WIDTH
-
-function fillPositionTexture(texture: DataTexture) {
-  for (let k = 0, kl = texture.image.data.length; k < kl; k += 4) {
-    const x = Math.random() * BOUNDS - BOUNDS_HALF
-    const y = Math.random() * BOUNDS - BOUNDS_HALF
-    const z = Math.random() * BOUNDS - BOUNDS_HALF
-
-    texture.image.data[k + 0] = x
-    texture.image.data[k + 1] = y
-    texture.image.data[k + 2] = z
-    texture.image.data[k + 3] = 1
-  }
-}
-
-function fillVelocityTexture(texture: DataTexture) {
-  for (let k = 0, kl = texture.image.data.length; k < kl; k += 4) {
-    const x = Math.random() - 0.5
-    const y = Math.random() - 0.5
-    const z = Math.random() - 0.5
-
-    texture.image.data[k + 0] = x
-    texture.image.data[k + 1] = y
-    texture.image.data[k + 2] = z
-    texture.image.data[k + 3] = 1
-  }
+export enum FishType {
+  BlueTang,
+  DoctorFish,
+  ClownFish,
 }
 
 type Uniforms = { [key: string]: IUniform<any> }
 
-export function Fishs() {
+export function Fishs({ amountOfFish = 1000, fishType = FishType.ClownFish }) {
   const { gl } = useThree()
 
+  const fishTextureWidth = Math.floor(Math.sqrt(amountOfFish))
+  const bounds = 10
+
   const gpuCompute = useMemo(() => {
-    const gpuCompute = new GPUComputationRenderer(WIDTH, WIDTH, gl)
+    const gpuCompute = new GPUComputationRenderer(fishTextureWidth, fishTextureWidth, gl)
     const error = gpuCompute.init()
 
     if (error !== null) {
@@ -79,24 +54,11 @@ export function Fishs() {
   const velocityVariable = useRef<Variable>()
   const positionVariable = useRef<Variable>()
   const positionUniforms = useRef<Uniforms>()
-  // {
-  //   time: { value: 0.0 },
-  //   delta: { value: 0.0 },
-  // }
   const velocityUniforms = useRef<Uniforms>()
-  //   {
-  //   time: { value: 0.0 },
-  //   delta: { value: 0.0 },
-  //   testing: { value: 1.0 },
-  //   separationDistance: { value: 1.0 },
-  //   alignmentDistance: { value: 1.0 },
-  //   cohesionDistance: { value: 1.0 },
-  //   freedomFactor: { value: 1.0 },
-  //   predator: { value: new Vector3(1, 1, 1) },
-  // }
+
   const fishUniforms = useMemo<Uniforms>(
     () => ({
-      color: { value: new Color(0xff2200) },
+      color: { value: new Color('#FF7F50') },
       texturePosition: { value: null },
       textureVelocity: { value: null },
       time: { value: 1.0 },
@@ -111,7 +73,7 @@ export function Fishs() {
     function initComputeRenderer() {
       const dtPosition = gpuCompute.createTexture()
       const dtVelocity = gpuCompute.createTexture()
-      fillPositionTexture(dtPosition)
+      fillPositionTexture(dtPosition, bounds)
       fillVelocityTexture(dtVelocity)
 
       velocityVariable.current = gpuCompute.addVariable('textureVelocity', velocityShader, dtVelocity)
@@ -134,7 +96,7 @@ export function Fishs() {
       velocityUniforms.current['freedomFactor'] = { value: 1.0 }
       velocityUniforms.current['predator'] = { value: new Vector3(1, 1, 1) }
 
-      velocityVariable.current.material.defines.BOUNDS = BOUNDS.toFixed(2)
+      velocityVariable.current.material.defines.BOUNDS = bounds.toFixed(2)
 
       velocityVariable.current.wrapS = RepeatWrapping
       velocityVariable.current.wrapT = RepeatWrapping
@@ -195,12 +157,12 @@ export function Fishs() {
   const fishMesh = useRef<Mesh<BufferGeometry, ShaderMaterial>>()
   const fishMaterial = useRef<CustomShaderMaterialType>()
 
-  const { nodes } = useFish1()
+  const fishGeometryArray = useFishGeos(fishType)
 
   const { fishGeo, minX, maxX } = useMemo(() => {
-    const merged = mergeBufferGeometries([nodes.Fish_1.geometry, nodes.Fish_2.geometry, nodes.Fish_3.geometry])
+    const merged = mergeBufferGeometries([...fishGeometryArray])
     const fishGeo = merged
-    const scale = 10
+    const scale = 10000
     fishGeo.scale(scale, scale, scale)
 
     fishGeo.rotateX(-Math.PI / 2)
@@ -213,12 +175,12 @@ export function Fishs() {
     }
 
     return { fishGeo, minX: currentMin, maxX: currentMax }
-  }, [nodes])
+  }, [fishGeometryArray])
 
   const customFishGeometry = useMemo(() => {
     const allFishes = new BufferGeometry()
 
-    const totalVertices = fishGeo.getAttribute('position').count * 3 * FISH_AMOUNT
+    const totalVertices = fishGeo.getAttribute('position').count * 3 * amountOfFish
 
     const vertices = []
     const reference = []
@@ -232,17 +194,17 @@ export function Fishs() {
     }
 
     let r = Math.random()
-    for (let i = 0; i < fishGeo.getAttribute('position').count * FISH_AMOUNT; i++) {
+    for (let i = 0; i < fishGeo.getAttribute('position').count * amountOfFish; i++) {
       const fishIndex = i % fishGeo.getAttribute('position').count
       const fish = Math.floor(i / fishGeo.getAttribute('position').count)
       if (fishIndex === 0) r = Math.random()
       const j = ~~fish
-      const x = (j % WIDTH) / WIDTH
-      const y = ~~(j / WIDTH) / WIDTH
+      const x = (j % fishTextureWidth) / fishTextureWidth
+      const y = ~~(j / fishTextureWidth) / fishTextureWidth
       reference.push(x, y)
     }
 
-    for (let i = 0; i < fishGeo.index.array.length * FISH_AMOUNT; i++) {
+    for (let i = 0; i < fishGeo.index.array.length * amountOfFish; i++) {
       const offset = Math.floor(i / fishGeo.index.array.length) * fishGeo.getAttribute('position').count
       indices.push(fishGeo.index.array[i % fishGeo.index.array.length] + offset)
     }
@@ -265,8 +227,60 @@ export function Fishs() {
         fragmentShader={fishFragment}
         uniforms={fishUniforms}
         flatShading
-        color={'#4CBB17'}
+        // color={'#4CBB17'}
+        color={'#FF7F50	'}
       />
     </mesh>
   )
+}
+
+function fillPositionTexture(texture: DataTexture, bounds: number) {
+  const bounds_half = bounds / 2
+
+  for (let k = 0, kl = texture.image.data.length; k < kl; k += 4) {
+    const x = Math.random() * bounds - bounds_half
+    const y = Math.random() * bounds - bounds_half
+    const z = Math.random() * bounds - bounds_half
+
+    texture.image.data[k + 0] = x
+    texture.image.data[k + 1] = y
+    texture.image.data[k + 2] = z
+    texture.image.data[k + 3] = 1
+  }
+}
+
+function fillVelocityTexture(texture: DataTexture) {
+  for (let k = 0, kl = texture.image.data.length; k < kl; k += 4) {
+    const x = Math.random() - 0.5
+    const y = Math.random() - 0.5
+    const z = Math.random() - 0.5
+
+    texture.image.data[k + 0] = x
+    texture.image.data[k + 1] = y
+    texture.image.data[k + 2] = z
+    texture.image.data[k + 3] = 1
+  }
+}
+
+function getFishGeo(typeOfFish: FishType) {
+  switch (typeOfFish) {
+    case FishType.BlueTang:
+      return useFish1()
+    case FishType.DoctorFish:
+      return useFish2()
+    case FishType.ClownFish:
+      return useFish3()
+  }
+}
+
+function useFishGeos(typeOfFish: FishType) {
+  const { nodes } = getFishGeo(typeOfFish)
+
+  const fishGeos = Object.keys(nodes).reduce((agg, key) => {
+    if (!(key.includes('Fish') && nodes[key] instanceof SkinnedMesh)) return agg
+
+    return [...agg, nodes[key].geometry]
+  }, [])
+
+  return fishGeos
 }

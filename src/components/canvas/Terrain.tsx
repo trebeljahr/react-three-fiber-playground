@@ -17,7 +17,7 @@ export const Floor = () => {
   )
 }
 
-export const viewDistance: number = 2
+export const viewDistance: number = 3
 export const scale: number = 60
 
 function computeChunkCoordinates(pos: Vector3) {

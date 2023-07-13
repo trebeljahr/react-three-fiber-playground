@@ -48,7 +48,8 @@ export default function WaterDemo() {
 
   return (
     <>
-      <Environment near={1} far={farOverwater} resolution={256} files='/skybox.hdr' />
+      {/* <Environment near={1} far={farOverwater} resolution={256} files='/skybox.hdr' /> */}
+      <Environment preset='forest' />
       <UI />
       <Physics>
         <SwimmingPlayerControls />
@@ -62,15 +63,13 @@ export default function WaterDemo() {
       {/* <color ref={colorRef} attach='background' args={['#00332E']} /> */}
 
       <Terrain />
-      <group position={new Vector3(0, 20, 0)}>
+      <group position={new Vector3(0, 20, 0)} scale={0.1}>
         <Fishs />
       </group>
 
       <OceanSurface position={[0, waterHeight, 0]} />
 
-      {
-        !underwater ? <Sky ref={skyRef} azimuth={1} inclination={0.6} distance={2000} /> : null // <color ref={colorRef} attach='background' args={['#00332E']} />
-      }
+      {!underwater && <Sky ref={skyRef} azimuth={1} inclination={0.6} distance={2000} />}
 
       {/* <Effects /> */}
     </>
