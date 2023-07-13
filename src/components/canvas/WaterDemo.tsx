@@ -56,19 +56,23 @@ export default function WaterDemo() {
       <Perf />
 
       <fogExp2 ref={fogRef} attach='fog' color='#0086ad' density={0.02} />
+      <color ref={colorRef} attach='background' args={['#0086ad']} />
+
+      {/* <fogExp2 ref={fogRef} attach='fog' color='#0086ad' density={0.02} /> */}
+      {/* <color ref={colorRef} attach='background' args={['#00332E']} /> */}
+
       <Terrain />
       <group position={new Vector3(0, 20, 0)}>
         <Fishs />
       </group>
 
       <OceanSurface position={[0, waterHeight, 0]} />
-      <color ref={colorRef} attach='background' args={['#00332E']} />
 
       {
         !underwater ? <Sky ref={skyRef} azimuth={1} inclination={0.6} distance={2000} /> : null // <color ref={colorRef} attach='background' args={['#00332E']} />
       }
 
-      <Effects />
+      {/* <Effects /> */}
     </>
   )
 }
