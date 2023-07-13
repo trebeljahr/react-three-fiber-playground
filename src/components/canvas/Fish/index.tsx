@@ -42,10 +42,15 @@ export enum FishType {
 
 type Uniforms = { [key: string]: IUniform<any> }
 
-export function Fishs({ amountOfFish = 100, fishType = FishType.DoctorFish, position = new Vector3(0, 20, 0) }) {
+export function Fishs({
+  amount = 100,
+  fishType = FishType.DoctorFish,
+  position = new Vector3(0, 20, 0),
+  color = '#FF7F50',
+}) {
   const { gl } = useThree()
 
-  const fishTextureWidth = Math.floor(Math.sqrt(amountOfFish))
+  const fishTextureWidth = Math.floor(Math.sqrt(amount))
   const bounds = 10
 
   const gpuCompute = useMemo(() => {
@@ -66,7 +71,7 @@ export function Fishs({ amountOfFish = 100, fishType = FishType.DoctorFish, posi
 
   const fishUniforms = useMemo<Uniforms>(
     () => ({
-      color: { value: new Color('#FF7F50') },
+      color: { value: new Color(color) },
       texturePosition: { value: null },
       textureVelocity: { value: null },
       time: { value: 1.0 },
@@ -188,7 +193,7 @@ export function Fishs({ amountOfFish = 100, fishType = FishType.DoctorFish, posi
   const customFishGeometry = useMemo(() => {
     const allFishes = new BufferGeometry()
 
-    const totalVertices = fishGeo.getAttribute('position').count * 3 * amountOfFish
+    const totalVertices = fishGeo.getAttribute('position').count * 3 * amount
 
     const vertices = []
     const reference = []
@@ -202,7 +207,7 @@ export function Fishs({ amountOfFish = 100, fishType = FishType.DoctorFish, posi
     }
 
     let r = Math.random()
-    for (let i = 0; i < fishGeo.getAttribute('position').count * amountOfFish; i++) {
+    for (let i = 0; i < fishGeo.getAttribute('position').count * amount; i++) {
       const fishIndex = i % fishGeo.getAttribute('position').count
       const fish = Math.floor(i / fishGeo.getAttribute('position').count)
       if (fishIndex === 0) r = Math.random()
@@ -212,7 +217,7 @@ export function Fishs({ amountOfFish = 100, fishType = FishType.DoctorFish, posi
       reference.push(x, y)
     }
 
-    for (let i = 0; i < fishGeo.index.array.length * amountOfFish; i++) {
+    for (let i = 0; i < fishGeo.index.array.length * amount; i++) {
       const offset = Math.floor(i / fishGeo.index.array.length) * fishGeo.getAttribute('position').count
       indices.push(fishGeo.index.array[i % fishGeo.index.array.length] + offset)
     }
@@ -236,7 +241,6 @@ export function Fishs({ amountOfFish = 100, fishType = FishType.DoctorFish, posi
           fragmentShader={fishFragment}
           uniforms={fishUniforms}
           flatShading
-          // color={'#4CBB17'}
           color={'#FF7F50	'}
         />
       </mesh>
