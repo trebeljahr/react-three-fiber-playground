@@ -47,6 +47,7 @@ export function Fishs({
   fishType = FishType.DoctorFish,
   position = new Vector3(0, 20, 0),
   color = '#FF7F50',
+  scaleFactor = 0.1,
 }) {
   const { gl } = useThree()
 
@@ -175,7 +176,7 @@ export function Fishs({
   const { fishGeo, minX, maxX } = useMemo(() => {
     const merged = mergeBufferGeometries([...fishGeometryArray])
     const fishGeo = merged
-    const scale = 500
+    const scale = 50 / scaleFactor
     fishGeo.scale(scale, scale, scale)
 
     fishGeo.rotateX(-Math.PI / 2)
@@ -232,7 +233,7 @@ export function Fishs({
   }, [fishGeo])
 
   return (
-    <group position={position} scale={0.1}>
+    <group position={position} scale={scaleFactor}>
       <mesh ref={fishMesh} geometry={customFishGeometry} frustumCulled={false}>
         <CustomShaderMaterial
           ref={fishMaterial}
@@ -241,7 +242,6 @@ export function Fishs({
           fragmentShader={fishFragment}
           uniforms={fishUniforms}
           flatShading
-          color={'#FF7F50	'}
         />
       </mesh>
     </group>
