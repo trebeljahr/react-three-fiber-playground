@@ -49,7 +49,7 @@ const Obstacles = () => {
           <meshPhysicalMaterial />
         </Box>
       </RigidBody>
-      {Array.from({ length: 20 }).map((_, i) => (
+      {/* {Array.from({ length: 20 }).map((_, i) => (
         <RigidBody key={i} colliders='cuboid' position={[i * 0.3, -8 + (i + 1) * 0.3, 0]} type='fixed'>
           <Box
             args={[0.3, 0.3, 5]}
@@ -60,12 +60,12 @@ const Obstacles = () => {
             <meshPhysicalMaterial />
           </Box>
         </RigidBody>
-      ))}
+      ))} */}
       {/* <InstancedTreesWithPhysics /> */}
-      <TreeWithPhysics />
+      {/* <TreeWithPhysics />
       <TreeWithBallPhysics />
       <TreeWithHullPhysics />
-      <TreeWithCuboidPhysics />
+      <TreeWithCuboidPhysics /> */}
     </>
   )
 }

@@ -25,6 +25,10 @@ const minJumpVelocity = Math.sqrt(2 * Math.abs(jumpGravity) * minJumpHeight)
 
 const velocityXZSmoothing = 0.2
 const velocityXZMin = 0.0001
+const _euler = new THREE.Euler(0, 0, 0, 'YXZ')
+const _PI_2 = Math.PI / 2
+const maxPolarAngle = Math.PI
+const minPolarAngle = 0
 
 export const FirstPersonController = (props: JSX.IntrinsicElements['group']) => {
   const [, get] = useKeyboardControls()
@@ -34,27 +38,20 @@ export const FirstPersonController = (props: JSX.IntrinsicElements['group']) => 
   const camera = useThree((state) => state.camera)
 
   useJoystick((data) => {
-    console.log(data)
+    // console.log(data)
     const rotationSpeed = 0.005
     const { leveledX, leveledY } = data
 
-    // Calculate new yaw and pitch
-    const newYaw = camera.rotation.y - leveledX * rotationSpeed
-    const newPitch = camera.rotation.x + leveledY * rotationSpeed
+    console.log(camera.rotation)
 
-    // Apply yaw (left/right) and pitch (up/down) without affecting roll
-    camera.rotation.set(
-      newPitch,
-      // camera.rotation.x,
-      newYaw,
-      // camera.rotation.y,
-      0,
-      // camera.rotation.z,
-      'XYZ', // Roll remains unchanged
-    )
+    _euler.setFromQuaternion(camera.quaternion)
 
-    // Clamp pitch to prevent flipping
-    camera.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, camera.rotation.x))
+    _euler.y -= leveledX * rotationSpeed
+    _euler.x += leveledY * rotationSpeed
+
+    _euler.x = Math.max(_PI_2 - maxPolarAngle, Math.min(_PI_2 - minPolarAngle, _euler.x))
+
+    camera.quaternion.setFromEuler(_euler)
   })
 
   const rapier = useRapier()
@@ -86,84 +83,7 @@ export const FirstPersonController = (props: JSX.IntrinsicElements['group']) => 
   }, [rapier.world])
 
   useFrame((state, delta) => {
-    if (!characterRigidBody.current || !characterController.current) return
-
-    const { forward, backward, left, right, jump, sprint } = get()
-    const speed = 15 * delta * (sprint ? 1.5 : 1)
-
-    const grounded = characterController.current.computedGrounded()
-
-    let smoothing = velocityXZSmoothing
-    smoothing *= grounded ? accelerationTimeGrounded : accelerationTimeAirborne
-
-    const factor = 1 - Math.pow(smoothing, delta)
-
-    frontVector.set(0, 0, Number(backward) - Number(forward))
-    sideVector.set(Number(left) - Number(right), 0, 0)
-    direction.subVectors(frontVector, sideVector).normalize().multiplyScalar(speed).applyEuler(camera.rotation)
-
-    const targetVelocity = {
-      x: direction.x,
-      z: direction.z,
-    }
-
-    velocity.current = {
-      x: THREE.MathUtils.lerp(velocity.current.x, targetVelocity.x, factor),
-      z: THREE.MathUtils.lerp(velocity.current.z, targetVelocity.z, factor),
-    }
-
-    let movementDirection = {
-      x: velocity.current.x,
-      y: jumpVelocity.current * factor,
-      z: velocity.current.z,
-    }
-
-    if (Math.abs(movementDirection.x) < velocityXZMin) {
-      movementDirection.x = 0
-    }
-
-    if (Math.abs(movementDirection.z) < velocityXZMin) {
-      movementDirection.z = 0
-    }
-
-    if ((jump && grounded) || holdingJump.current) {
-      holdingJump.current = true
-      jumpTime.current = state.clock.elapsedTime
-      jumpVelocity.current = maxJumpVelocity
-    }
-
-    if ((holdingJump.current && !jump) || jumpTime.current + timeToJumpApex > state.clock.elapsedTime) {
-      holdingJump.current = false
-
-      if (jumpVelocity.current > minJumpVelocity) {
-        jumpVelocity.current = minJumpVelocity
-      }
-    }
-
-    if (!jump && grounded) {
-      jumpVelocity.current = 0
-    } else {
-      jumpVelocity.current += jumpGravity * factor
-    }
-
-    const characterCollider = characterRigidBody.current.raw().collider(0)
-
-    characterController.current.computeColliderMovement(characterCollider, movementDirection)
-
-    const movement = characterController.current.computedMovement()
-    const newPos = characterRigidBody.current.translation()
-    newPos.x += movement.x
-    newPos.y += movement.y
-    newPos.z += movement.z
-
-    characterRigidBody.current.setNextKinematicTranslation(newPos)
-
-    const rigidBodyTranslation = characterRigidBody.current.translation()
-    if (characterRigidBody.current.translation().y <= -30) {
-      characterRigidBody.current.setNextKinematicTranslation(new Vector3(0, 0, 0))
-    }
-    idealCameraPosition.set(rigidBodyTranslation.x, rigidBodyTranslation.y, rigidBodyTranslation.z)
-    camera.position.lerp(idealCameraPosition, 100 * delta)
+    return
   })
 
   return (
