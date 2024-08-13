@@ -15,26 +15,26 @@ export interface JoystickData {
 
 export type JoystickCallback = (data: JoystickData) => void
 
-export function useJoystick(joystickCallback?: JoystickCallback) {
+const defaultParameters = {
+  x: '15%',
+  y: '15%',
+  opacity: 0.5,
+  maxRange: 80,
+  radius: 70,
+  joystickRadius: 40,
+  joystickClass: 'joystick',
+  containerClass: 'joystick-container',
+  distortion: false,
+  mouseClickButton: 'ALL',
+  hideContextMenu: true,
+}
+
+export function useJoystick(joystickCallback?: JoystickCallback, overwriteParams?: Partial<typeof defaultParameters>) {
+  const parameters = { ...defaultParameters, ...overwriteParams }
   useEffect(() => {
     if (typeof window === 'undefined') return
 
-    const staticJoystick = new JoystickController(
-      {
-        x: '15%',
-        y: '15%',
-        opacity: 0.5,
-        maxRange: 80,
-        radius: 70,
-        joystickRadius: 40,
-        joystickClass: 'joystick',
-        containerClass: 'joystick-container',
-        distortion: false,
-        mouseClickButton: 'ALL',
-        hideContextMenu: true,
-      },
-      joystickCallback || console.log,
-    )
+    const staticJoystick = new JoystickController(parameters, joystickCallback || console.log)
 
     return () => {
       staticJoystick.destroy()

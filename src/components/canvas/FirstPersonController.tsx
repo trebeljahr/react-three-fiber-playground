@@ -1,6 +1,6 @@
 import Rapier from '@dimforge/rapier3d-compat'
 import { useJoystick } from '@pages/joystick'
-import { Box, KeyboardControls, PointerLockControls, useKeyboardControls } from '@react-three/drei'
+import { useKeyboardControls } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'
 import { CapsuleCollider, RigidBody, RigidBodyApi, useRapier } from '@react-three/rapier'
 import { useEffect, useRef } from 'react'
@@ -11,7 +11,6 @@ const idealCameraPosition = new THREE.Vector3()
 const direction = new THREE.Vector3()
 const frontVector = new THREE.Vector3()
 const sideVector = new THREE.Vector3()
-const rotation = new THREE.Vector3()
 
 const accelerationTimeAirborne = 0.2
 const accelerationTimeGrounded = 0.025
@@ -32,18 +31,12 @@ const minPolarAngle = 0
 
 export const FirstPersonController = (props: JSX.IntrinsicElements['group']) => {
   const [, get] = useKeyboardControls()
-
-  const controlsRef = useRef(null)
-
   const camera = useThree((state) => state.camera)
 
   useJoystick((data) => {
     // console.log(data)
     const rotationSpeed = 0.005
     const { leveledX, leveledY } = data
-
-    console.log(camera.rotation)
-
     _euler.setFromQuaternion(camera.quaternion)
 
     _euler.y -= leveledX * rotationSpeed
@@ -53,6 +46,74 @@ export const FirstPersonController = (props: JSX.IntrinsicElements['group']) => 
 
     camera.quaternion.setFromEuler(_euler)
   })
+
+  useJoystick(
+    (data) => {
+      // console.log(data)
+      if (!characterRigidBody.current || !characterController.current) return
+
+      const { leveledX, leveledY } = data
+      console.log(data)
+
+      const speed = 0.5
+
+      const grounded = characterController.current.computedGrounded()
+
+      let smoothing = velocityXZSmoothing
+      smoothing *= grounded ? accelerationTimeGrounded : accelerationTimeAirborne
+
+      const factor = 1 - Math.pow(smoothing, 0.5)
+
+      frontVector.set(0, 0, -leveledY)
+      sideVector.set(-leveledX, 0, 0)
+      direction.subVectors(frontVector, sideVector).normalize().multiplyScalar(speed).applyEuler(camera.rotation)
+
+      const targetVelocity = {
+        x: direction.x,
+        z: direction.z,
+      }
+
+      velocity.current = {
+        x: THREE.MathUtils.lerp(velocity.current.x, targetVelocity.x, factor),
+        z: THREE.MathUtils.lerp(velocity.current.z, targetVelocity.z, factor),
+      }
+
+      let movementDirection = {
+        x: velocity.current.x,
+        y: jumpVelocity.current * factor,
+        z: velocity.current.z,
+      }
+
+      if (Math.abs(movementDirection.x) < velocityXZMin) {
+        movementDirection.x = 0
+      }
+
+      if (Math.abs(movementDirection.z) < velocityXZMin) {
+        movementDirection.z = 0
+      }
+
+      const characterCollider = characterRigidBody.current.raw().collider(0)
+
+      characterController.current.computeColliderMovement(characterCollider, movementDirection)
+
+      const movement = characterController.current.computedMovement()
+      const newPos = characterRigidBody.current.translation()
+      newPos.x += movement.x
+      newPos.y += movement.y
+      newPos.z += movement.z
+
+      characterRigidBody.current.setNextKinematicTranslation(newPos)
+
+      const rigidBodyTranslation = characterRigidBody.current.translation()
+      if (characterRigidBody.current.translation().y <= -30) {
+        characterRigidBody.current.setNextKinematicTranslation(new Vector3(0, 0, 0))
+      }
+      idealCameraPosition.set(rigidBodyTranslation.x, rigidBodyTranslation.y, rigidBodyTranslation.z)
+      camera.position.copy(idealCameraPosition)
+    },
+
+    { x: '85%', y: '15%' },
+  )
 
   const rapier = useRapier()
 
@@ -67,8 +128,6 @@ export const FirstPersonController = (props: JSX.IntrinsicElements['group']) => 
   const jumpTime = useRef(0)
 
   useEffect(() => {
-    camera.rotation.set(0, 0, 0)
-
     const world = rapier.world.raw()
 
     characterController.current = world.createCharacterController(0.1)
@@ -83,7 +142,7 @@ export const FirstPersonController = (props: JSX.IntrinsicElements['group']) => 
   }, [rapier.world])
 
   useFrame((state, delta) => {
-    if (!characterRigidBody.current || !characterController.current) return
+    if (!characterRigidBody.current || !characterController.current || true) return
 
     const { forward, backward, left, right, jump, sprint } = get()
     const speed = 15 * delta * (sprint ? 1.5 : 1)
@@ -171,11 +230,10 @@ export const FirstPersonController = (props: JSX.IntrinsicElements['group']) => 
         colliders={false}
         mass={1}
         type='kinematicPosition'
-        position={[0, 20, 0]}
+        position={[0, 0, 0]}
         enabledRotations={[false, false, false]}>
         <CapsuleCollider args={[0.5, 0.5]} />
       </RigidBody>
-      {/* <PointerLockControls ref={controlsRef} makeDefault /> */}
     </>
   )
 }
