@@ -63,7 +63,7 @@ export default function WaterDemo() {
 
   return (
     <>
-      <Environment preset='forest' />
+      {/* <Environment preset='forest' /> */}
       <UI />
       <Physics>
         <SwimmingPlayerControls />
@@ -79,8 +79,8 @@ export default function WaterDemo() {
       <Fishs position={new Vector3(10, 10, 0)} fishType={FishType.BlueTang} color='#7fe08f' />
       <Fishs position={new Vector3(5, 10, 5)} fishType={FishType.Manta} color='#394e4d' />
       <Fishs position={new Vector3(0, 10, 10)} fishType={FishType.DoctorFish} color='#1ea8ed' />
-      <Fishs position={new Vector3(20, 10, 5)} fishType={FishType.Whale} color='#0b4171' scaleFactor={3} />
-      <Fishs position={new Vector3(15, 10, 10)} fishType={FishType.Shark} color='#6b6b6b' amount={10} scaleFactor={2} />
+      {/* <Fishs position={new Vector3(20, 10, 5)} fishType={FishType.Whale} color='#0b4171' scaleFactor={3} /> */}
+      <Fishs position={new Vector3(15, 10, 10)} fishType={FishType.Whale} color='#6b6b6b' amount={10} scaleFactor={2} />
       <Fishs position={new Vector3(10, 5, 0)} fishType={FishType.Dolphin} color='#617675' />
 
       <MovingInCircle />

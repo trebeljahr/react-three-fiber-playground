@@ -1,4 +1,5 @@
 import Rapier from '@dimforge/rapier3d-compat'
+import { useJoystick } from '@pages/joystick'
 import { Box, KeyboardControls, PointerLockControls, useKeyboardControls } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'
 import { CapsuleCollider, RigidBody, RigidBodyApi, useRapier } from '@react-three/rapier'
@@ -28,7 +29,34 @@ const velocityXZMin = 0.0001
 export const FirstPersonController = (props: JSX.IntrinsicElements['group']) => {
   const [, get] = useKeyboardControls()
 
+  const controlsRef = useRef(null)
+
   const camera = useThree((state) => state.camera)
+
+  useJoystick((data) => {
+    console.log(data)
+    const rotationSpeed = 0.005
+    const { leveledX, leveledY } = data
+
+    // Calculate new yaw and pitch
+    const newYaw = camera.rotation.y - leveledX * rotationSpeed
+    const newPitch = camera.rotation.x + leveledY * rotationSpeed
+
+    // Apply yaw (left/right) and pitch (up/down) without affecting roll
+    camera.rotation.set(
+      newPitch,
+      // camera.rotation.x,
+      newYaw,
+      // camera.rotation.y,
+      0,
+      // camera.rotation.z,
+      'XYZ', // Roll remains unchanged
+    )
+
+    // Clamp pitch to prevent flipping
+    camera.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, camera.rotation.x))
+  })
+
   const rapier = useRapier()
 
   const characterRigidBody = useRef<RigidBodyApi>(null!)
@@ -42,6 +70,8 @@ export const FirstPersonController = (props: JSX.IntrinsicElements['group']) => 
   const jumpTime = useRef(0)
 
   useEffect(() => {
+    camera.rotation.set(0, 0, 0)
+
     const world = rapier.world.raw()
 
     characterController.current = world.createCharacterController(0.1)
@@ -148,7 +178,7 @@ export const FirstPersonController = (props: JSX.IntrinsicElements['group']) => 
         enabledRotations={[false, false, false]}>
         <CapsuleCollider args={[0.5, 0.5]} />
       </RigidBody>
-      <PointerLockControls makeDefault />
+      {/* <PointerLockControls ref={controlsRef} makeDefault /> */}
     </>
   )
 }

@@ -5,6 +5,7 @@ uniform sampler2D textureVelocity;
 uniform float time;
 uniform float minX;
 uniform float maxX;
+uniform float scaleFactor;
 
 varying float z;
 
@@ -24,7 +25,7 @@ void main() {
 
   z = remap(test.x, minX, maxX, 1., 0.);
 
-  newPosition.x += sin(time / 1000.0 * 10. + z * 2.) * z;
+  newPosition.x += sin(time / 1000.0 * 10. + z * 2.) * z / scaleFactor / 2.0;
 
   newPosition = mat3(modelMatrix) * newPosition;
 

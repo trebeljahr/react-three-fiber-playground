@@ -76,6 +76,7 @@ export function Fishs({
       texturePosition: { value: null },
       textureVelocity: { value: null },
       time: { value: 1.0 },
+      scaleFactor: { value: scaleFactor },
       delta: { value: 0.0 },
       minX: { value: 0.0 },
       maxX: { value: 0.0 },
