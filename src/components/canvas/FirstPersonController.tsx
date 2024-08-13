@@ -83,7 +83,84 @@ export const FirstPersonController = (props: JSX.IntrinsicElements['group']) => 
   }, [rapier.world])
 
   useFrame((state, delta) => {
-    return
+    if (!characterRigidBody.current || !characterController.current) return
+
+    const { forward, backward, left, right, jump, sprint } = get()
+    const speed = 15 * delta * (sprint ? 1.5 : 1)
+
+    const grounded = characterController.current.computedGrounded()
+
+    let smoothing = velocityXZSmoothing
+    smoothing *= grounded ? accelerationTimeGrounded : accelerationTimeAirborne
+
+    const factor = 1 - Math.pow(smoothing, delta)
+
+    frontVector.set(0, 0, Number(backward) - Number(forward))
+    sideVector.set(Number(left) - Number(right), 0, 0)
+    direction.subVectors(frontVector, sideVector).normalize().multiplyScalar(speed).applyEuler(camera.rotation)
+
+    const targetVelocity = {
+      x: direction.x,
+      z: direction.z,
+    }
+
+    velocity.current = {
+      x: THREE.MathUtils.lerp(velocity.current.x, targetVelocity.x, factor),
+      z: THREE.MathUtils.lerp(velocity.current.z, targetVelocity.z, factor),
+    }
+
+    let movementDirection = {
+      x: velocity.current.x,
+      y: jumpVelocity.current * factor,
+      z: velocity.current.z,
+    }
+
+    if (Math.abs(movementDirection.x) < velocityXZMin) {
+      movementDirection.x = 0
+    }
+
+    if (Math.abs(movementDirection.z) < velocityXZMin) {
+      movementDirection.z = 0
+    }
+
+    if ((jump && grounded) || holdingJump.current) {
+      holdingJump.current = true
+      jumpTime.current = state.clock.elapsedTime
+      jumpVelocity.current = maxJumpVelocity
+    }
+
+    if ((holdingJump.current && !jump) || jumpTime.current + timeToJumpApex > state.clock.elapsedTime) {
+      holdingJump.current = false
+
+      if (jumpVelocity.current > minJumpVelocity) {
+        jumpVelocity.current = minJumpVelocity
+      }
+    }
+
+    if (!jump && grounded) {
+      jumpVelocity.current = 0
+    } else {
+      jumpVelocity.current += jumpGravity * factor
+    }
+
+    const characterCollider = characterRigidBody.current.raw().collider(0)
+
+    characterController.current.computeColliderMovement(characterCollider, movementDirection)
+
+    const movement = characterController.current.computedMovement()
+    const newPos = characterRigidBody.current.translation()
+    newPos.x += movement.x
+    newPos.y += movement.y
+    newPos.z += movement.z
+
+    characterRigidBody.current.setNextKinematicTranslation(newPos)
+
+    const rigidBodyTranslation = characterRigidBody.current.translation()
+    if (characterRigidBody.current.translation().y <= -30) {
+      characterRigidBody.current.setNextKinematicTranslation(new Vector3(0, 0, 0))
+    }
+    idealCameraPosition.set(rigidBodyTranslation.x, rigidBodyTranslation.y, rigidBodyTranslation.z)
+    camera.position.lerp(idealCameraPosition, 100 * delta)
   })
 
   return (
