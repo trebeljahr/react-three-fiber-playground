@@ -1,4 +1,4 @@
-import { waterHeight } from '@hooks/UnderwaterContext'
+import { waterHeight } from '@contexts/UnderwaterContext'
 import { KeyboardControls, Preload } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 

@@ -1,4 +1,4 @@
-import { UnderwaterContextProvider } from '@hooks/UnderwaterContext'
+import { UnderwaterContextProvider } from '@contexts/UnderwaterContext'
 import dynamic from 'next/dynamic'
 import tunnel from 'tunnel-rat'
 

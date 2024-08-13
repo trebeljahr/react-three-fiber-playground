@@ -1,4 +1,4 @@
-import { useUnderwaterContext, waterHeight } from '@hooks/UnderwaterContext'
+import { useUnderwaterContext, waterHeight } from '@contexts/UnderwaterContext'
 import { In } from '@pages'
 import { Html, ScreenSpace } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'

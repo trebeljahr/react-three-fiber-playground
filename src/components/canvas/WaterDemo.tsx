@@ -1,4 +1,4 @@
-import { useUnderwaterContext, waterHeight } from '@hooks/UnderwaterContext'
+import { useUnderwaterContext, waterHeight } from '@contexts/UnderwaterContext'
 import Whale from '@models/fish_pack/Whale'
 import { Environment, Sky } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'

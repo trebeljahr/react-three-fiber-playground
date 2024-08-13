@@ -92,9 +92,9 @@ export const FirstPersonController = (props: JSX.IntrinsicElements['group']) => 
     // sideVector.set(Number(left) - Number(right), 0, 0)
 
     const { leveledX, leveledY } = getJoystickData()
-
     frontVector.set(0, 0, -leveledY)
     sideVector.set(-leveledX, 0, 0)
+
     direction.subVectors(frontVector, sideVector).normalize().multiplyScalar(speed).applyEuler(camera.rotation)
 
     const targetVelocity = {
