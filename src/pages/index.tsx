@@ -1,26 +1,15 @@
-import { UnderwaterContextProvider } from '@contexts/UnderwaterContext'
-import dynamic from 'next/dynamic'
-import tunnel from 'tunnel-rat'
-
-const WaterDemo = dynamic(() => import('@components/canvas/WaterDemo'), { ssr: false })
-
-export const { In, Out } = tunnel()
-
 export default function Page() {
   return (
     <>
-      <Out />
+      <h1>Welcome to my R3F Playground!</h1>
+      <p>
+        Here's where I experiment with all things Three.js and React Three Fibre to learn those technologies, building
+        out little demos, trying to improve my understanding so that I can one day build a complete 3D game in the
+        browser. You can check out the demos in the side panel.
+      </p>
     </>
   )
 }
-
-Page.canvas = () => (
-  <>
-    <UnderwaterContextProvider>
-      <WaterDemo />
-    </UnderwaterContextProvider>
-  </>
-)
 
 export async function getStaticProps() {
   return { props: { title: 'Index' } }
