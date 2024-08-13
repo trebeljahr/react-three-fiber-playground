@@ -1,13 +1,18 @@
+import Scene from '@components/canvas/Scene'
 import dynamic from 'next/dynamic'
 
 const ThirdPersonDemo = dynamic(() => import('@components/canvas/ThirdPersonDemo'), { ssr: false })
 
 export default function Page() {
-  return <></>
+  return (
+    <>
+      <Scene>
+        <ThirdPersonDemo />
+      </Scene>
+    </>
+  )
 }
 
-Page.canvas = () => <ThirdPersonDemo />
-
 export async function getStaticProps() {
-  return { props: { title: 'Index' } }
+  return { props: { title: 'Third Person Camera Demo' } }
 }

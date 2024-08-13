@@ -1,3 +1,4 @@
+import Scene from '@components/canvas/Scene'
 import { UnderwaterContextProvider } from '@contexts/UnderwaterContext'
 import dynamic from 'next/dynamic'
 import tunnel from 'tunnel-rat'
@@ -10,18 +11,15 @@ export default function Page() {
   return (
     <>
       <Out />
+      <Scene>
+        <UnderwaterContextProvider>
+          <WaterDemo />
+        </UnderwaterContextProvider>
+      </Scene>
     </>
   )
 }
 
-Page.canvas = () => (
-  <>
-    <UnderwaterContextProvider>
-      <WaterDemo />
-    </UnderwaterContextProvider>
-  </>
-)
-
 export async function getStaticProps() {
-  return { props: { title: 'Index' } }
+  return { props: { title: 'Ocean Demo' } }
 }

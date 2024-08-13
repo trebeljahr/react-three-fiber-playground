@@ -1,15 +1,20 @@
 import { FirstPersonController } from '@components/canvas/FirstPersonController'
-import {
-  TreeWithBallPhysics,
-  TreeWithCuboidPhysics,
-  TreeWithHullPhysics,
-  TreeWithPhysics,
-} from '@components/canvas/TreeStuff'
+import Scene from '@components/canvas/Scene'
 import { Box, Sky } from '@react-three/drei'
 import { Debug, Physics, RigidBody } from '@react-three/rapier'
 
 export default function Page() {
-  return <></>
+  return (
+    <Scene>
+      <Sky azimuth={1} inclination={0.6} distance={1000} />
+
+      <Physics colliders='hull'>
+        <Debug />
+        <FirstPersonController />
+        <Obstacles />
+      </Physics>
+    </Scene>
+  )
 }
 
 const Obstacles = () => {
@@ -69,15 +74,3 @@ const Obstacles = () => {
     </>
   )
 }
-
-Page.canvas = () => (
-  <>
-    <Sky azimuth={1} inclination={0.6} distance={1000} />
-
-    <Physics colliders='hull'>
-      <Debug />
-      <FirstPersonController />
-      <Obstacles />
-    </Physics>
-  </>
-)

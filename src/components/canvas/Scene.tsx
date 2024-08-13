@@ -1,12 +1,13 @@
 import { waterHeight } from '@contexts/UnderwaterContext'
 import { KeyboardControls, Preload } from '@react-three/drei'
-import { Canvas } from '@react-three/fiber'
+import { Canvas, CanvasProps } from '@react-three/fiber'
+import { PropsWithChildren } from 'react'
 
 export const surfaceLevel = waterHeight
 export const farUnderwater = 50
 export const farOverwater = 100
 
-export default function Scene({ children, ...props }) {
+export default function Scene({ children, ...props }: PropsWithChildren<CanvasProps>) {
   return (
     <KeyboardControls
       map={[

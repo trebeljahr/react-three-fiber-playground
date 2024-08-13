@@ -1,9 +1,16 @@
+import Scene from '@components/canvas/Scene'
 import dynamic from 'next/dynamic'
 
 const CarDemo = dynamic(() => import('@components/canvas/CarDemo'), { ssr: false })
 
 export default function Page() {
-  return <></>
+  return (
+    <Scene eventPrefix='client'>
+      <CarDemo />
+    </Scene>
+  )
 }
 
-Page.canvas = () => <CarDemo></CarDemo>
+Page.getInitialProps = async () => {
+  return { title: 'Car Demo' }
+}
