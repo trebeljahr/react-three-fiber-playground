@@ -1,6 +1,5 @@
 import { Birds } from '@components/canvas/Birds'
-import Scene from '@components/canvas/Scene'
-import { OrbitControls, Preload } from '@react-three/drei'
+import { OrbitControls } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { Perf } from 'r3f-perf'
 import { Vector3 } from 'three'
@@ -11,7 +10,6 @@ export default function Page() {
       <Birds />
       <fog color={0xffffff} near={100} far={1000} />
       <Perf />
-      <ambientLight />
       <OrbitControls />
     </Canvas>
   )

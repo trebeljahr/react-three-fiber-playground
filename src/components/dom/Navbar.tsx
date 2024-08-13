@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 const sideStyle =
   'z-[1500] absolute overflow-x-hidden overflow-y-auto font-leva text-sm	w-60 bg-leva-dark h-screen  transform transition-all fixed duration-700 text-leva-white p-2'
@@ -9,30 +9,48 @@ const buttonStyle =
 
 export const Navbar = () => {
   const [open, setOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null!)
 
-  const toggleOpen = () => {
+  const toggleOpen = (e: any) => {
     setOpen(!open)
+    e.stopPropagation()
   }
+
+  useEffect(() => {
+    if (!document) return
+
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (open && !menuRef.current.contains(e.target as Node)) {
+        setOpen(false)
+      }
+    }
+
+    document.addEventListener('click', handleOutsideClick)
+
+    return () => {
+      document.removeEventListener('click', handleOutsideClick)
+    }
+  }, [open])
+
   return (
     <>
       <button id='close-btn' className={`${buttonStyle} ${open && 'translate-x-60'}`} onClick={toggleOpen}>
         {open ? '<' : '>'}
       </button>
       <div className={`${sideStyle} ${!open && '-translate-x-60'}`}>
-        {open && (
-          <div className='relative h-full min-h-[750px]'>
-            <nav className='flex flex-col'>
-              <Link href={'/birds'}>Birds</Link>
-              <Link href={'/car-demo'}>Car Demo</Link>
-              <Link href={'/fbo-demo'}>FBO Demo</Link>
-              <Link href={'/first-person-controller'}>First Person Controller</Link>
-              <Link href={'/fishs'}>Fish</Link>
-              <Link href={'/ocean'}>Ocean</Link>
-              <Link href={'/ship'}>Ship</Link>
-              <Link href={'/third-person-camera'}>Third Person Camera</Link>
-            </nav>
-          </div>
-        )}
+        <div className='relative h-full min-h-[750px]' ref={menuRef}>
+          <nav className='flex flex-col'>
+            <Link href={'/'}>Home</Link>
+            <Link href={'/birds'}>Birds</Link>
+            <Link href={'/car-demo'}>Car Demo</Link>
+            <Link href={'/fbo-demo'}>FBO Demo</Link>
+            <Link href={'/first-person-controller'}>First Person Controller</Link>
+            <Link href={'/fishs'}>Fish</Link>
+            <Link href={'/ocean'}>Ocean</Link>
+            <Link href={'/ship'}>Ship</Link>
+            <Link href={'/third-person-camera'}>Third Person Camera</Link>
+          </nav>
+        </div>
       </div>
     </>
   )
