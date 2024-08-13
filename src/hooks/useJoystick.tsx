@@ -1,5 +1,5 @@
 import JoystickController from 'joystick-controller'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef } from 'react'
 
 export interface JoystickData {
   angle: string
@@ -28,13 +28,13 @@ const defaultParameters = {
 
 export function useJoystick({ cb, params }: { cb?: JoystickCallback; params?: Partial<typeof defaultParameters> }) {
   const parameters = { ...defaultParameters, ...params }
-  const [joystickData, setJoystickData] = useState<JoystickData | null>(null)
+  const joystickDataRef = useRef<JoystickData>(null!)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
 
     const staticJoystick = new JoystickController(parameters, (data: JoystickData) => {
-      setJoystickData(data)
+      joystickDataRef.current = data
       cb?.(data)
     })
 
@@ -43,7 +43,7 @@ export function useJoystick({ cb, params }: { cb?: JoystickCallback; params?: Pa
     }
   }, [])
 
-  const getJoystickData = () => joystickData
+  const getJoystickData = () => joystickDataRef.current
 
   return getJoystickData
 }
