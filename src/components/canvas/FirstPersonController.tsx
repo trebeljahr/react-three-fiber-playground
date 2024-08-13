@@ -1,5 +1,5 @@
 import Rapier from '@dimforge/rapier3d-compat'
-import { useJoystick } from '@pages/joystick'
+import { useJoystick } from '@hooks/useJoystick'
 import { useKeyboardControls } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'
 import { CapsuleCollider, RigidBody, RigidBodyApi, useRapier } from '@react-three/rapier'
@@ -33,87 +33,21 @@ export const FirstPersonController = (props: JSX.IntrinsicElements['group']) => 
   const [, get] = useKeyboardControls()
   const camera = useThree((state) => state.camera)
 
-  useJoystick((data) => {
-    // console.log(data)
-    const rotationSpeed = 0.005
-    const { leveledX, leveledY } = data
-    _euler.setFromQuaternion(camera.quaternion)
+  useJoystick({
+    cb: ({ leveledX, leveledY }) => {
+      const rotationSpeed = 0.005
+      _euler.setFromQuaternion(camera.quaternion)
 
-    _euler.y -= leveledX * rotationSpeed
-    _euler.x += leveledY * rotationSpeed
+      _euler.y -= leveledX * rotationSpeed
+      _euler.x += leveledY * rotationSpeed
 
-    _euler.x = Math.max(_PI_2 - maxPolarAngle, Math.min(_PI_2 - minPolarAngle, _euler.x))
+      _euler.x = Math.max(_PI_2 - maxPolarAngle, Math.min(_PI_2 - minPolarAngle, _euler.x))
 
-    camera.quaternion.setFromEuler(_euler)
+      camera.quaternion.setFromEuler(_euler)
+    },
   })
 
-  useJoystick(
-    (data) => {
-      // console.log(data)
-      if (!characterRigidBody.current || !characterController.current) return
-
-      const { leveledX, leveledY } = data
-      console.log(data)
-
-      const speed = 0.5
-
-      const grounded = characterController.current.computedGrounded()
-
-      let smoothing = velocityXZSmoothing
-      smoothing *= grounded ? accelerationTimeGrounded : accelerationTimeAirborne
-
-      const factor = 1 - Math.pow(smoothing, 0.5)
-
-      frontVector.set(0, 0, -leveledY)
-      sideVector.set(-leveledX, 0, 0)
-      direction.subVectors(frontVector, sideVector).normalize().multiplyScalar(speed).applyEuler(camera.rotation)
-
-      const targetVelocity = {
-        x: direction.x,
-        z: direction.z,
-      }
-
-      velocity.current = {
-        x: THREE.MathUtils.lerp(velocity.current.x, targetVelocity.x, factor),
-        z: THREE.MathUtils.lerp(velocity.current.z, targetVelocity.z, factor),
-      }
-
-      let movementDirection = {
-        x: velocity.current.x,
-        y: jumpVelocity.current * factor,
-        z: velocity.current.z,
-      }
-
-      if (Math.abs(movementDirection.x) < velocityXZMin) {
-        movementDirection.x = 0
-      }
-
-      if (Math.abs(movementDirection.z) < velocityXZMin) {
-        movementDirection.z = 0
-      }
-
-      const characterCollider = characterRigidBody.current.raw().collider(0)
-
-      characterController.current.computeColliderMovement(characterCollider, movementDirection)
-
-      const movement = characterController.current.computedMovement()
-      const newPos = characterRigidBody.current.translation()
-      newPos.x += movement.x
-      newPos.y += movement.y
-      newPos.z += movement.z
-
-      characterRigidBody.current.setNextKinematicTranslation(newPos)
-
-      const rigidBodyTranslation = characterRigidBody.current.translation()
-      if (characterRigidBody.current.translation().y <= -30) {
-        characterRigidBody.current.setNextKinematicTranslation(new Vector3(0, 0, 0))
-      }
-      idealCameraPosition.set(rigidBodyTranslation.x, rigidBodyTranslation.y, rigidBodyTranslation.z)
-      camera.position.copy(idealCameraPosition)
-    },
-
-    { x: '85%', y: '15%' },
-  )
+  const getJoystickData = useJoystick({ params: { x: '85%', y: '15%' } })
 
   const rapier = useRapier()
 
@@ -142,7 +76,7 @@ export const FirstPersonController = (props: JSX.IntrinsicElements['group']) => 
   }, [rapier.world])
 
   useFrame((state, delta) => {
-    if (!characterRigidBody.current || !characterController.current || true) return
+    if (!characterRigidBody.current || !characterController.current || !getJoystickData) return
 
     const { forward, backward, left, right, jump, sprint } = get()
     const speed = 15 * delta * (sprint ? 1.5 : 1)
@@ -154,8 +88,13 @@ export const FirstPersonController = (props: JSX.IntrinsicElements['group']) => 
 
     const factor = 1 - Math.pow(smoothing, delta)
 
-    frontVector.set(0, 0, Number(backward) - Number(forward))
-    sideVector.set(Number(left) - Number(right), 0, 0)
+    // frontVector.set(0, 0, Number(backward) - Number(forward))
+    // sideVector.set(Number(left) - Number(right), 0, 0)
+
+    const { leveledX, leveledY } = getJoystickData()
+
+    frontVector.set(0, 0, -leveledY)
+    sideVector.set(-leveledX, 0, 0)
     direction.subVectors(frontVector, sideVector).normalize().multiplyScalar(speed).applyEuler(camera.rotation)
 
     const targetVelocity = {

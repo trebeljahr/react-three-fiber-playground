@@ -1,8 +1,5 @@
-import tunnel from 'tunnel-rat'
 import JoystickController from 'joystick-controller'
-import { useEffect } from 'react'
-
-export const { In, Out } = tunnel()
+import { useEffect, useState } from 'react'
 
 export interface JoystickData {
   angle: string
@@ -29,28 +26,24 @@ const defaultParameters = {
   hideContextMenu: true,
 }
 
-export function useJoystick(joystickCallback?: JoystickCallback, overwriteParams?: Partial<typeof defaultParameters>) {
-  const parameters = { ...defaultParameters, ...overwriteParams }
+export function useJoystick({ cb, params }: { cb?: JoystickCallback; params?: Partial<typeof defaultParameters> }) {
+  const parameters = { ...defaultParameters, ...params }
+  const [joystickData, setJoystickData] = useState<JoystickData | null>(null)
+
   useEffect(() => {
     if (typeof window === 'undefined') return
 
-    const staticJoystick = new JoystickController(parameters, joystickCallback || console.log)
+    const staticJoystick = new JoystickController(parameters, (data: JoystickData) => {
+      setJoystickData(data)
+      cb?.(data)
+    })
 
     return () => {
       staticJoystick.destroy()
     }
   }, [])
-}
-export default function Page() {
-  useJoystick()
 
-  return (
-    <>
-      <Out />
-    </>
-  )
-}
+  const getJoystickData = () => joystickData
 
-export async function getStaticProps() {
-  return { props: { title: 'Index' } }
+  return getJoystickData
 }

@@ -69,6 +69,7 @@ const Obstacles = () => {
     </>
   )
 }
+
 Page.canvas = () => (
   <>
     <Sky azimuth={1} inclination={0.6} distance={1000} />
