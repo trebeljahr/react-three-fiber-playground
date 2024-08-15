@@ -44,6 +44,7 @@ export const Navbar = () => {
             <Link href={'/birds'}>Birds</Link>
             <Link href={'/car-demo'}>Car Demo</Link>
             <Link href={'/fbo-demo'}>FBO Demo</Link>
+            <Link href={'/mixamo-character'}>Mixamo Character</Link>
             <Link href={'/first-person-controller'}>First Person Controller</Link>
             <Link href={'/fishs'}>Fish</Link>
             <Link href={'/ocean'}>Ocean</Link>
