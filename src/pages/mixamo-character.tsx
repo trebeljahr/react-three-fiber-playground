@@ -1,5 +1,5 @@
 import Scene from '@components/canvas/Scene'
-import { Stage } from '@react-three/drei'
+import { OrbitControls, Stage } from '@react-three/drei'
 
 import dynamic from 'next/dynamic'
 
@@ -13,6 +13,7 @@ export default function Page() {
       <Stage adjustCamera intensity={0.5} shadows='contact' environment='city'>
         <DynamicCharacter />
       </Stage>
+      <OrbitControls />
     </Scene>
   )
 }

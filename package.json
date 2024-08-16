@@ -11,11 +11,12 @@
   },
   "dependencies": {
     "@dimforge/rapier3d-compat": "^0.10.0",
-    "@react-three/drei": "^9.48.6",
+    "@react-three/drei": "^9.109.5",
     "@react-three/fiber": "^8.9.0",
     "@react-three/postprocessing": "^2.7.0",
-    "@react-three/rapier": "^0.11.1",
+    "@react-three/rapier": "^1.4.0",
     "case": "^1.6.3",
+    "ecctrl": "^1.0.88",
     "eslint-plugin-tailwindcss": "^3.17.4",
     "fast-2d-poisson-disk-sampling": "^1.0.3",
     "glsl-curl-noise2": "^0.0.4",
@@ -32,7 +33,7 @@
     "react-dom": "^18.2.0",
     "react-merge-refs": "^2.0.1",
     "simplex-noise": "^3.0.1",
-    "three": "^0.146.0",
+    "three": "^0.167.1",
     "three-custom-shader-material": "^4.0.0",
     "three-stdlib": "^2.17.3",
     "tunnel-rat": "^0.1.0"
