@@ -4,7 +4,7 @@ Command: npx gltfjsx@6.5.0 out/glb/Pro Melee Axe Pack_unarmed idle looking ver. 
 */
 
 import * as THREE from 'three'
-import { useRef } from 'react' 
+import { useRef } from 'react'
 import { useGLTF, useAnimations } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
 
@@ -14,11 +14,16 @@ interface GLTFAction extends THREE.AnimationClip {
   name: ActionName
 }
 
-type GLTFResult = GLTF & {
-  nodes: {}
-  materials: {}
-  animations: GLTFAction[]
+
+export type GLTFResult = GLTF & {
+  nodes: {
+    [x: string]: THREE.Mesh
+  }
+  materials: {
+    [x: string]: THREE.Material
+  }
 }
+
 
 export function Model(props: JSX.IntrinsicElements['group']) {
   const group = useRef<THREE.Group>()

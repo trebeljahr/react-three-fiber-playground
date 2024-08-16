@@ -1,8 +1,8 @@
-import { Vector3 } from 'three'
-import { useFrame, useThree } from '@react-three/fiber'
 import { PointerLockControls, useKeyboardControls } from '@react-three/drei'
-import { PropsWithChildren, useEffect, useRef } from 'react'
-import { RigidBody, RigidBodyApi } from '@react-three/rapier'
+import { useFrame, useThree } from '@react-three/fiber'
+import { RigidBody, RapierRigidBody } from '@react-three/rapier'
+import { PropsWithChildren, RefObject, useEffect, useRef } from 'react'
+import { Vector3 } from 'three'
 import { clamp, lerp } from 'three/src/math/MathUtils'
 
 const SPEED = 5
@@ -12,7 +12,7 @@ const sideVector = new Vector3()
 
 export function SwimmingPlayerControls({ children }: PropsWithChildren) {
   const [subscribe, get] = useKeyboardControls()
-  const ref = useRef<RigidBodyApi>()
+  const rigidBodyRef = useRef<RapierRigidBody>()
   const { camera } = useThree()
   const speedFactor = useRef(1)
   const desiredFactor = useRef(1)
@@ -29,11 +29,12 @@ export function SwimmingPlayerControls({ children }: PropsWithChildren) {
   }, [subscribe])
 
   useFrame((_, delta) => {
-    if (!ref.current) return
+    if (!rigidBodyRef.current) return
 
     const { forward, backward, left, right, jump, descend, sprint } = get()
 
-    camera.position.set(...ref.current.translation().toArray())
+    const { x, y, z } = rigidBodyRef.current.translation()
+    camera.position.set(x, y, z)
 
     frontVector.set(0, 0, +backward - +forward)
     sideVector.set(+left - +right, 0, 0)
@@ -50,13 +51,13 @@ export function SwimmingPlayerControls({ children }: PropsWithChildren) {
       .normalize()
       .multiplyScalar(SPEED * speedFactor.current)
 
-    ref.current.setLinvel({ x: direction.x, y: direction.y, z: direction.z })
+    rigidBodyRef.current.setLinvel({ x: direction.x, y: direction.y, z: direction.z }, true)
   })
 
   return (
     <>
       <RigidBody
-        ref={ref}
+        ref={rigidBodyRef}
         colliders={false}
         mass={1}
         type='dynamic'
@@ -71,15 +72,16 @@ export function SwimmingPlayerControls({ children }: PropsWithChildren) {
 
 export function MinecraftCreativeControlsPlayer({ children }: PropsWithChildren) {
   const [, get] = useKeyboardControls()
-  const ref = useRef<RigidBodyApi>()
+  const rigidBodyRef = useRef<RapierRigidBody>()
   const { camera } = useThree()
 
   useFrame(() => {
-    if (!ref.current) return
+    if (!rigidBodyRef.current) return
 
     const { forward, backward, left, right, jump, descend } = get()
 
-    camera.position.set(...ref.current.translation().toArray())
+    const { x, y, z } = rigidBodyRef.current.translation()
+    camera.position.set(x, y, z)
 
     frontVector.set(0, 0, +backward - +forward)
     sideVector.set(+left - +right, 0, 0)
@@ -91,13 +93,13 @@ export function MinecraftCreativeControlsPlayer({ children }: PropsWithChildren)
       .applyEuler(camera.rotation)
       .setY((+jump - +descend) * SPEED)
 
-    ref.current.setLinvel({ x: direction.x, y: direction.y, z: direction.z })
+    rigidBodyRef.current.setLinvel({ x: direction.x, y: direction.y, z: direction.z }, true)
   })
 
   return (
     <>
       <RigidBody
-        ref={ref}
+        ref={rigidBodyRef}
         colliders={false}
         mass={1}
         type='dynamic'

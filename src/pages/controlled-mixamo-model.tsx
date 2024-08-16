@@ -17,9 +17,7 @@ const keyboardMap = [
 
 export function Model(props: JSX.IntrinsicElements['group']) {
   const group = useRef()
-  const { nodes, materials, animations } = useGLTF('/Mixamo.glb') as any
-  //   const { actions } = useAnimations(animations, group)
-  console.log(animations)
+  const { nodes, materials } = useGLTF(characterURL) as any
 
   return (
     <group ref={group} {...props} dispose={null}>
@@ -38,7 +36,7 @@ export function Model(props: JSX.IntrinsicElements['group']) {
   )
 }
 
-useGLTF.preload('/Mixamo.glb')
+useGLTF.preload(characterURL)
 
 import { RigidBody } from '@react-three/rapier'
 import { DirectionalLight } from 'three'
@@ -56,8 +54,6 @@ export function Floor() {
 
 export function Lights() {
   const directionalLightRef = useRef<DirectionalLight>()
-
-  // useHelper(directionalLightRef, DirectionalLightHelper, 1);
 
   return (
     <>
@@ -91,20 +87,6 @@ export default function Page() {
     jumpLand: 'Jump_Land',
   }
 
-  const { gridSize, ...gridConfig } = {
-    gridSize: [10.5, 10.5],
-    cellSize: { value: 0.6, min: 0, max: 10, step: 0.1 },
-    cellThickness: { value: 1, min: 0, max: 5, step: 0.1 },
-    cellColor: '#6f6f6f',
-    sectionSize: { value: 3.3, min: 0, max: 10, step: 0.1 },
-    sectionThickness: { value: 1.5, min: 0, max: 5, step: 0.1 },
-    sectionColor: 'lightgray',
-    fadeDistance: { value: 25, min: 0, max: 100, step: 1 },
-    fadeStrength: { value: 1, min: 0, max: 1, step: 0.1 },
-    followCamera: false,
-    infiniteGrid: false,
-  }
-
   return (
     <>
       <EcctrlJoystick />
@@ -113,10 +95,7 @@ export default function Page() {
         <Physics timeStep='vary'>
           <KeyboardControls map={keyboardMap}>
             <Ecctrl animated>
-              <EcctrlAnimation
-                characterURL={characterURL} // Must have property
-                animationSet={animationSet} // Must have property
-              >
+              <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}>
                 <Model />
               </EcctrlAnimation>
             </Ecctrl>

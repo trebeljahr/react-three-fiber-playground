@@ -1,19 +1,13 @@
 import { BirchTree_1 } from '@models/nature_pack'
 import { useTree1 } from '@models/nature_pack/CommonTree_1'
 import { default as Tree1 } from '@models/simple_nature_pack/Tree1'
-import {
-  CylinderCollider,
-  InstancedRigidBodies,
-  InstancedRigidBodyApi,
-  RigidBody,
-  Vector3Array,
-} from '@react-three/rapier'
+import { CylinderCollider, InstancedRigidBodies, RigidBody, Vector3Array } from '@react-three/rapier'
 import { useRef } from 'react'
 import { Vector3 } from 'three'
 import { randFloat } from 'three/src/math/MathUtils'
 
 export const InstancedTreesWithPhysics = () => {
-  const api = useRef<InstancedRigidBodyApi>(null)
+  const api = useRef(null)
 
   const { nodes, materials } = useTree1()
   const COUNT = 10
@@ -22,7 +16,7 @@ export const InstancedTreesWithPhysics = () => {
   const rotations: Vector3Array[] = Array.from({ length: COUNT }, () => [0, 0, Math.PI / 2])
   return (
     <group>
-      <InstancedRigidBodies ref={api} colliders={false} type='fixed' {...{ positions, rotations }}>
+      <InstancedRigidBodies ref={api} instances={null} colliders={false} type='fixed' {...{ positions, rotations }}>
         <instancedMesh
           args={[nodes.CommonTree_1_1.geometry, materials.Wood, COUNT]}
           scale={[scaleFactor, scaleFactor, scaleFactor]}>
@@ -30,7 +24,7 @@ export const InstancedTreesWithPhysics = () => {
         </instancedMesh>
       </InstancedRigidBodies>
 
-      <InstancedRigidBodies ref={api} colliders={false} type='fixed' {...{ positions, rotations }}>
+      <InstancedRigidBodies ref={api} instances={null} colliders={false} type='fixed' {...{ positions, rotations }}>
         <instancedMesh
           args={[nodes.CommonTree_1_2.geometry, materials.Green, COUNT]}
           scale={[scaleFactor, scaleFactor, scaleFactor]}

@@ -1,10 +1,10 @@
-import { Group, Quaternion, Vector3 } from 'three'
-import { useFrame, useThree } from '@react-three/fiber'
 import { OrbitControls, useKeyboardControls } from '@react-three/drei'
-import React, { MutableRefObject, useEffect, useRef } from 'react'
-import { Trex, useTrex } from './Trex'
+import { useFrame, useThree } from '@react-three/fiber'
+import { RapierRigidBody, RigidBody, useRapier } from '@react-three/rapier'
+import { MutableRefObject, useEffect, useRef } from 'react'
+import { Group, Quaternion, Vector3 } from 'three'
 import { OrbitControls as OrbitControlsImpl } from 'three-stdlib'
-import { Debug, RigidBody, RigidBodyApi, useRapier } from '@react-three/rapier'
+import { Trex } from './Trex'
 import { KinematicCharacterController, Ray } from '@dimforge/rapier3d-compat'
 
 const velocity = 20
@@ -12,7 +12,7 @@ const velocity = 20
 export const lerp = (x: number, y: number, a: number) => x * (1 - a) + y * a
 
 export function useCharacterController(
-  rigidBodyRef: MutableRefObject<RigidBodyApi>,
+  rigidBodyRef: MutableRefObject<RapierRigidBody>,
   orbitControlsRef: MutableRefObject<OrbitControlsImpl>,
 ) {
   const walkDirectionRef = useRef(new Vector3())
@@ -20,12 +20,13 @@ export function useCharacterController(
   const rotateQuaternionRef = useRef(new Quaternion())
   const cameraTargetRef = useRef(new Vector3())
   const storedFallRef = useRef(0)
-  const characterControllerRef = useRef<KinematicCharacterController>()
+  const rapier = useRapier()
+
+  const characterControllerRef = useRef<ReturnType<typeof rapier.world.createCharacterController>>()
 
   const { camera } = useThree()
-  const rapier = useRapier()
   useEffect(() => {
-    const world = rapier.world.raw()
+    const world = rapier.world
     const offset = 0.01
     characterControllerRef.current = world.createCharacterController(offset)
     characterControllerRef.current.setSlideEnabled(true)
@@ -147,13 +148,13 @@ export function useCharacterController(
           z: 0,
         })
       } else {
-        const cameraPositionOffset = camera.position.sub(position)
+        const cameraPositionOffset = camera.position.sub(new Vector3(position.x, position.y, position.z))
         // model.position.x = translation.x
         // model.position.y = translation.y
         // model.position.z = translation.z
         updateCameraTarget(cameraPositionOffset)
 
-        const world = rapier.world.raw()
+        const world = rapier.world
 
         // const ray = world.castRay(, { x: 0, y: -1, z: 0 }))
 
@@ -162,10 +163,10 @@ export function useCharacterController(
         const ray = new Ray(translation, { x: 0, y: -1, z: 0 })
         let hit = world.castRay(ray, 0.5, false, 1)
         if (hit) {
-          const grounded = hit && hit.collider && Math.abs(hit.toi) <= 1.75
+          const grounded = hit && hit.collider && Math.abs(hit.timeOfImpact) <= 1.75
           if (grounded) {
             storedFallRef.current = 0
-            walkDirection.y = lerp(0, Math.abs(hit.toi), 0.5)
+            walkDirection.y = lerp(0, Math.abs(hit.timeOfImpact), 0.5)
           }
         }
 
@@ -175,35 +176,17 @@ export function useCharacterController(
         // console.log(characterController)
 
         const collider = world.getCollider(rigidBody.handle)
-
-        console.log(rigidBody)
-        const api = rigidBody.raw()
-
-        console.log(api)
+        const api = rigidBody
         const collider2 = api.collider(0)
-        console.log(collider)
-        console.log(collider2)
 
         const desiredTranslation = {
           x: translation.x + walkDirection.x,
           y: translation.y + walkDirection.y,
           z: translation.z + walkDirection.z,
         }
-        console.log('desired:', desiredTranslation)
         characterController.computeColliderMovement(collider2, desiredTranslation)
 
-        console.log('num collisions:', characterController.numComputedCollisions())
-
-        for (let i = 0; i < characterController.numComputedCollisions(); i++) {
-          console.log(i)
-          let collision = characterController.computedCollision(i)
-          console.log('collision: ', collision)
-        }
-
         let correctedMovement = characterController.computedMovement()
-
-        console.log('corrected:', correctedMovement)
-
         const { x, y, z } = correctedMovement
         rigidBody.setNextKinematicTranslation({ x, y: 0, z })
       }
@@ -214,7 +197,7 @@ export function useCharacterController(
 }
 export function ImprovedPlayerController() {
   const modelRef = useRef<Group>()
-  const rigidBodyRef = useRef<RigidBodyApi>()
+  const rigidBodyRef = useRef<RapierRigidBody>()
   const orbitControlsRef = useRef<OrbitControlsImpl>()
 
   useCharacterController(rigidBodyRef, orbitControlsRef)
@@ -236,7 +219,6 @@ export function ImprovedPlayerController() {
       <RigidBody colliders='hull' ref={rigidBodyRef} type='kinematicPosition' enabledRotations={[false, false, false]}>
         <Trex withAnimations={true} />
       </RigidBody>
-      <Debug />
       <OrbitControls ref={orbitControlsRef} {...orbitControlsProps} />
     </>
   )

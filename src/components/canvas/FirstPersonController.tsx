@@ -1,8 +1,7 @@
-import Rapier from '@dimforge/rapier3d-compat'
 import { useJoystick } from '@hooks/useJoystick'
 import { useKeyboardControls } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'
-import { CapsuleCollider, RigidBody, RigidBodyApi, useRapier } from '@react-three/rapier'
+import { CapsuleCollider, RapierRigidBody, RigidBody, useRapier } from '@react-three/rapier'
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 import { Vector3 } from 'three'
@@ -51,9 +50,9 @@ export const FirstPersonController = (props: JSX.IntrinsicElements['group']) => 
 
   const rapier = useRapier()
 
-  const characterRigidBody = useRef<RigidBodyApi>(null!)
+  const characterRigidBody = useRef<RapierRigidBody>(null!)
 
-  const characterController = useRef<Rapier.KinematicCharacterController>(null!)
+  const characterController = useRef<ReturnType<typeof rapier.world.createCharacterController>>(null!)
 
   const velocity = useRef({ x: 0, z: 0 })
 
@@ -62,7 +61,7 @@ export const FirstPersonController = (props: JSX.IntrinsicElements['group']) => 
   const jumpTime = useRef(0)
 
   useEffect(() => {
-    const world = rapier.world.raw()
+    const world = rapier.world
 
     characterController.current = world.createCharacterController(0.1)
     characterController.current.enableAutostep(0.7, 0.3, true)
@@ -141,7 +140,7 @@ export const FirstPersonController = (props: JSX.IntrinsicElements['group']) => 
       jumpVelocity.current += jumpGravity * factor
     }
 
-    const characterCollider = characterRigidBody.current.raw().collider(0)
+    const characterCollider = characterRigidBody.current.collider(0)
 
     characterController.current.computeColliderMovement(characterCollider, movementDirection)
 
