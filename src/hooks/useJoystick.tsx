@@ -43,7 +43,7 @@ export function useJoystick({ cb, params }: { cb?: JoystickCallback; params?: Pa
     }
   }, [])
 
-  const getJoystickData = () => joystickDataRef.current
+  const getData = () => joystickDataRef.current
 
-  return getJoystickData
+  return { getData }
 }

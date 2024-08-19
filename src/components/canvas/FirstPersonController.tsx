@@ -46,7 +46,7 @@ export const FirstPersonController = (props: JSX.IntrinsicElements['group']) => 
     },
   })
 
-  const getJoystickData = useJoystick({ params: { x: '85%', y: '15%' } })
+  const joystick = useJoystick({ params: { x: '85%', y: '15%' } })
 
   const rapier = useRapier()
 
@@ -75,7 +75,7 @@ export const FirstPersonController = (props: JSX.IntrinsicElements['group']) => 
   }, [rapier.world])
 
   useFrame((state, delta) => {
-    if (!characterRigidBody.current || !characterController.current || !getJoystickData) return
+    if (!characterRigidBody.current || !characterController.current || !joystick) return
 
     const { forward, backward, left, right, jump, sprint } = get()
     const speed = 15 * delta * (sprint ? 1.5 : 1)
@@ -90,7 +90,7 @@ export const FirstPersonController = (props: JSX.IntrinsicElements['group']) => 
     // frontVector.set(0, 0, Number(backward) - Number(forward))
     // sideVector.set(Number(left) - Number(right), 0, 0)
 
-    const { leveledX, leveledY } = getJoystickData()
+    const { leveledX, leveledY } = joystick.getData()
     frontVector.set(0, 0, -leveledY)
     sideVector.set(-leveledX, 0, 0)
 

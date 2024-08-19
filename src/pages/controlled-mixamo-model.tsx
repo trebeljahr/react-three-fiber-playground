@@ -1,10 +1,11 @@
-import { Grid, KeyboardControls, useGLTF } from '@react-three/drei'
+import { ControlledCharacterModel } from '@components/canvas/ControlledCharacterModel'
+import Grass from '@components/canvas/Grass'
+import { KeyboardControls, Sky } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
-import { Physics } from '@react-three/rapier'
-import Ecctrl, { EcctrlAnimation, EcctrlJoystick } from 'ecctrl'
+import { Physics, RigidBody } from '@react-three/rapier'
+import { EcctrlJoystick } from 'ecctrl'
 import { useRef } from 'react'
-
-const characterURL = '/Mixamo.glb'
+import { DirectionalLight } from 'three'
 
 const keyboardMap = [
   { name: 'forward', keys: ['ArrowUp', 'KeyW'] },
@@ -14,32 +15,6 @@ const keyboardMap = [
   { name: 'jump', keys: ['Space'] },
   { name: 'run', keys: ['Shift'] },
 ]
-
-export function Model(props: JSX.IntrinsicElements['group']) {
-  const group = useRef()
-  const { nodes, materials } = useGLTF(characterURL) as any
-
-  return (
-    <group ref={group} {...props} dispose={null}>
-      <group name='Scene'>
-        <group name='Michelle' rotation={[Math.PI / 2, 0, 0]} scale={0.01}>
-          <skinnedMesh
-            name='Ch03'
-            geometry={nodes.Ch03.geometry}
-            material={materials['Ch03_Body.002']}
-            skeleton={nodes.Ch03.skeleton}
-          />
-          <primitive object={nodes.mixamorigHips} />
-        </group>
-      </group>
-    </group>
-  )
-}
-
-useGLTF.preload(characterURL)
-
-import { RigidBody } from '@react-three/rapier'
-import { DirectionalLight } from 'three'
 
 export function Floor() {
   return (
@@ -78,15 +53,6 @@ export function Lights() {
 }
 
 export default function Page() {
-  const animationSet = {
-    idle: 'Idle',
-    walk: 'Walk',
-    run: 'Run',
-    jump: 'Jump_Start',
-    jumpIdle: 'Fall_Idle',
-    jumpLand: 'Jump_Land',
-  }
-
   return (
     <>
       <EcctrlJoystick />
@@ -94,14 +60,12 @@ export default function Page() {
       <Canvas>
         <Physics timeStep='vary'>
           <KeyboardControls map={keyboardMap}>
-            <Ecctrl animated>
-              <EcctrlAnimation characterURL={characterURL} animationSet={animationSet}>
-                <Model />
-              </EcctrlAnimation>
-            </Ecctrl>
+            <ControlledCharacterModel />
           </KeyboardControls>
-          <Floor />
+          {/* <Floor /> */}
           <Lights />
+          <Sky />
+          <Grass />
         </Physics>
       </Canvas>
     </>
