@@ -42,6 +42,7 @@ export function ControlledCharacterModel() {
       position={[0, 3, 0]}
       animated
       slopeDownExtraForce={0}
+      camCollision={false}
       //   springK={2}
       //   dampingC={0.2}
       //   autoBalanceSpringK={1.2}

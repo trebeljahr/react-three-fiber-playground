@@ -16,12 +16,14 @@ declare module '@react-three/fiber' {
   }
 }
 
-export default function Grass({ options = { bW: 0.12, bH: 1, joints: 5 }, width = 32, instances = 10000, ...props }) {
-  const { bW, bH, joints } = options
+export default function Grass({ size, width = 32, instances = 100000, ...props }) {
+  const bH = size
+  const bW = size * 0.12
+  const joints = 5
   const materialRef = useRef<THREE.ShaderMaterial>(null!)
   const [texture, alphaMap] = useLoader(THREE.TextureLoader, ['/grass/blade_diffuse.jpg', '/grass/blade_alpha.jpg'])
   const attributeData = useMemo(() => getAttributeData(instances, width), [instances, width])
-  const baseGeom = useMemo(() => new THREE.PlaneGeometry(bW, bH, 1, joints).translate(0, bH / 2, 0), [options])
+  const baseGeom = useMemo(() => new THREE.PlaneGeometry(bW, bH, 1, joints).translate(0, bH / 2, 0), [size])
 
   const [groundGeo, heightField] = useMemo(() => {
     const geo = new THREE.PlaneGeometry(width, width, width - 1, width - 1)
@@ -29,7 +31,6 @@ export default function Grass({ options = { bW: 0.12, bH: 1, joints: 5 }, width 
     geo.scale(1, -1, 1)
     geo.rotateX(-Math.PI / 2)
     geo.rotateY(-Math.PI / 2)
-    // geo.lookAt(new THREE.Vector3(0, 1, 0))
 
     const positions = geo.attributes.position
 
@@ -43,21 +44,16 @@ export default function Grass({ options = { bW: 0.12, bH: 1, joints: 5 }, width 
       heightField.push(y)
     }
 
-    console.log(heightField.length, width)
-    console.log(heightField)
-    console.log(positions.count)
-    console.log(positions)
-
     geo.computeVertexNormals()
 
     return [geo, heightField]
   }, [width])
 
-  // useFrame((state) => (materialRef.current.uniforms.time.value = state.clock.elapsedTime / 4))
+  useFrame((state) => (materialRef.current.uniforms.time.value = state.clock.elapsedTime / 4))
 
   return (
     <group {...props}>
-      <mesh>
+      <mesh frustumCulled={false}>
         <instancedBufferGeometry
           index={baseGeom.index}
           attributes-position={baseGeom.attributes.position}

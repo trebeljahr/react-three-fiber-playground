@@ -58,14 +58,14 @@ export default function Page() {
       <EcctrlJoystick />
 
       <Canvas>
-        <Physics timeStep='vary'>
+        <Physics debug timeStep='vary'>
           <KeyboardControls map={keyboardMap}>
             <ControlledCharacterModel />
           </KeyboardControls>
           {/* <Floor /> */}
           <Lights />
           <Sky />
-          <Grass />
+          <Grass size={0.3} />
         </Physics>
       </Canvas>
     </>

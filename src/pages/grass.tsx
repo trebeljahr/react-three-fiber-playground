@@ -10,9 +10,7 @@ export default function Page() {
       <Sky azimuth={1} inclination={0.6} distance={1000} />
       <ambientLight />
       <pointLight position={[10, 10, 10]} />
-      <Suspense fallback={null}>
-        <Grass />
-      </Suspense>
+      <Suspense fallback={null}>{/* <Grass /> */}</Suspense>
       <OrbitControls minPolarAngle={Math.PI / 2.5} maxPolarAngle={Math.PI / 2.5} />
     </Canvas>
   )
